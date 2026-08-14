@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <!--========================-->
+    <!-- META                  -->
+    <!--========================-->
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FinTrack | Dashboard</title>
+
+    <!--========================-->
+    <!-- GOOGLE FONTS          -->
+    <!--========================-->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!--========================-->
+    <!-- FONT AWESOME          -->
+    <!--========================-->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!--========================-->
+    <!-- CSS                  -->
+    <!--========================-->
+
+    <link rel="stylesheet" href="assets/css/variables.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+</head>
+
+<body>
+
+    <!--======================================================-->
+    <!-- CONTENEDOR PRINCIPAL -->
+    <!--======================================================-->
+
+    <div class="main-container">
+
+        <!--==================================================-->
+        <!-- SIDEBAR -->
+        <!--==================================================-->
+
+        <aside class="sidebar">
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+                <div class="logo-icon">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                </div>
+
+                <div class="logo-text">
+
+                    <h2>FinTrack</h2>
+
+                    <span>Finanzas Personales</span>
+
+                </div>
+
+            </div>
+
+            <!-- MENÚ -->
+
+            <nav>
+
+
+               <ul class="menu">
+
+    <li class="active" id="nav-dashboard" data-page="dashboard">
+
+        <i class="fa-solid fa-house"></i>
+
+        <span>Dashboard</span>
+
+    </li>
+
+   
+
+    <li id="nav-objetivos" data-page="objetivos">
+
+        <i class="fa-solid fa-bullseye"></i>
+
+        <span>Objetivos</span>
+
+    </li>
+
+    <li id="nav-moto" data-page="moto">
+
+        <i class="fa-solid fa-motorcycle"></i>
+
+        <span>Moto</span>
+
+    </li>
+
+    <li id="nav-historial" data-page="historial">
+
+        <i class="fa-solid fa-clock-rotate-left"></i>
+
+        <span>Historial</span>
+
+    </li>
+
+    <li id="nav-estadisticas" data-page="estadisticas">
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        <span>Estadísticas</span>
+
+    </li>
+
+    <li id="nav-asistente" data-page="asistente">
+
+        <i class="fa-solid fa-robot"></i>
+
+        <span>Asistente IA</span>
+
+    </li>
+
+    <li id="nav-configuracion" data-page="configuracion">
+
+        <i class="fa-solid fa-gear"></i>
+
+        <span>Configuración</span>
+
+    </li>
+
+</ul>
+            </nav>
+
+            <!-- FOOTER SIDEBAR -->
+
+            <div class="sidebar-footer">
+
+                <p>
+
+                    FinTrack
+
+                </p>
+
+                <small>
+
+                    v 2.0
+
+                </small>
+
+            </div>
+
+        </aside>
+   <!--==================================================-->
+        <!-- CONTENIDO -->
+        <!--==================================================-->
+
+        <main class="content">
+
+
+
+            <!--==============================================-->
+            <!-- TOPBAR -->
+            <!--==============================================-->
+
+           <header class="topbar">
+
+    <!-- IZQUIERDA -->
+    <div class="topbar-left">
+
+        <div class="welcome">
+
+            <h1 id="page-title">
+                Dashboard
+            </h1>
+
+            <p id="greeting">
+                Cargando saludo...
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- DERECHA -->
+    <div class="topbar-right">
+
+        <!-- FECHA -->
+        <div class="date-box">
+
+            <i class="fa-regular fa-calendar"></i>
+
+            <span id="current-date">
+                Cargando fecha...
+            </span>
+
+        </div>
+
+        <!-- BOTÓN PRINCIPAL -->
+        <button id="quick-action" class="primary-btn">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Nuevo movimiento
+
+        </button>
+
+        <!-- AVATAR -->
+        <div class="user-avatar">
+
+            <i class="fa-solid fa-user"></i>
+
+        </div>
+
+    </div>
+
+            </header>
+
+
+<!--==============================================-->
+<!-- DASHBOARD CARDS -->
+<!--==============================================-->
+
+<section
+id="dashboard-page"
+class="page">
+
+<div class="dashboard-cards">
+
+    <!-- SALDO -->
+
+    <article class="dashboard-card">
+
+        <div class="card-top">
+
+            <div class="card-icon balance">
+
+                <i class="fa-solid fa-wallet"></i>
+
+            </div>
+
+            <span class="card-status">
+
+                Disponible
+
+            </span>
+
+        </div>
+
+        <h3>
+
+            Saldo Disponible
+
+        </h3>
+
+        <h2 id="saldo">$0</h2>
+
+       <p id="balance-message">
+
+    Empieza registrando tu primer ingreso.
+
+</p>
+
+    </article>
+
+    <!-- INGRESOS -->
+
+    <article class="dashboard-card" id="income-card">
+
+        <div class="card-top">
+
+            <div class="card-icon income">
+
+                <i class="fa-solid fa-arrow-trend-up"></i>
+
+            </div>
+
+            <span class="card-status positive">
+
+                Este mes
+
+            </span>
+
+        </div>
+
+        <h3>
+
+            Ingresos
+
+        </h3>
+
+        <h2 id="ingresos">$0</h2>
+        <p id="income-message">
+
+    Aún no registras ingresos.
+
+</p>
+
+    </article>
+
+    <!-- GASTOS -->
+
+    <article class="dashboard-card" id="expense-card">
+
+        <div class="card-top">
+
+            <div class="card-icon expense">
+
+                <i class="fa-solid fa-arrow-trend-down"></i>
+
+            </div>
+
+            <span class="card-status negative">
+
+                Control
+
+            </span>
+
+        </div>
+
+        <h3>
+
+            Gastos
+
+        </h3>
+
+        <h2 id="gastos">$0</h2>
+
+        <p id="expense-message">
+
+    Todo está bajo control.
+
+</p>
+
+    </article>
+
+    <!-- AHORROS -->
+
+    <article class="dashboard-card" id="saving-card">
+
+        <div class="card-top">
+
+            <div class="card-icon saving">
+
+                <i class="fa-solid fa-piggy-bank"></i>
+
+            </div>
+
+            <span class="card-status">
+
+                Meta
+
+            </span>
+
+        </div>
+
+        <h3>
+
+            Ahorros
+
+        </h3>
+
+        <h2 id="ahorros">$0</h2>
+
+        <p id="saving-message">
+
+    Empieza a construir tu futuro.
+
+</p>
+
+    </article>
+
+
+    <!-- RESUMEN -->
+
+    <article class="dashboard-card assistant-card">
+
+        <div class="card-top">
+
+            <div class="card-icon assistant">
+
+                <i class="fa-solid fa-robot"></i>
+
+            </div>
+
+            <span class="card-status">
+
+                FinTrack IA
+
+            </span>
+
+        </div>
+
+        <h3>
+
+            Resumen del Día
+
+        </h3>
+
+        <div id="dashboard-insights" class="dashboard-insights">
+
+</div>
+    </article>
+</div>
+
+</section>
+
+<!--==================================================-->
+<!-- HISTORIAL -->
+
+<!--==================================================-->
+<!-- HISTORIAL -->
+<!--==================================================-->
+
+<section id="history-page" class="page hidden">
+
+    <!-- CABECERA -->
+
+    <div class="page-header">
+
+        <h2>
+
+            Historial de movimientos
+
+        </h2>
+
+        <p>
+
+            Consulta todos tus ingresos, gastos y ahorros.
+
+        </p>
+
+    </div>
+
+    <!-- BARRA SUPERIOR -->
+
+    <div class="history-toolbar">
+
+        <!-- BUSCADOR -->
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="history-search"
+                placeholder="Buscar movimiento...">
+
+        </div>
+
+        <!-- FILTRO -->
+
+        <select id="history-filter">
+
+            <option value="todos">
+
+                Todos
+
+            </option>
+
+            <option value="ingreso">
+
+                Ingresos
+
+            </option>
+
+            <option value="gasto">
+
+                Gastos
+
+            </option>
+
+            <option value="ahorro">
+
+                Ahorros
+
+            </option>
+
+        </select>
+
+    </div>
+
+    <!-- TIMELINE -->
+
+    <div id="history-list">
+
+        <!-- Aquí aparecerán los movimientos -->
+
+        <div class="history-empty">
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            <h3>
+
+                Aún no tienes movimientos
+
+            </h3>
+
+            <p>
+
+                Registra tu primer ingreso para comenzar.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    </section>
+
+
+    
+<section
+id="goals-page"
+class="page hidden">
+
+<div class="page-header">
+
+
+
+    <p>
+
+        Hagale manito que esa moto no se compra sola 🏍️
+
+    </p>
+
+</div>
+
+
+<!-- META PRINCIPAL -->
+
+<div id="main-goal">
+
+</div>
+
+
+
+<div id="goals-container">
+
+    <!-- Aquí aparecerán las metas -->
+    
+    </div>
+
+</section>
+
+<!--==================================================-->
+<!-- MOTO-->
+<!--==================================================-->
+
+
+<section id="moto-page" class="page">
+
+    <div id="moto-hero"></div>
+
+    <div id="moto-reminders"></div>
+
+    <div id="moto-stats"></div>
+
+    <div id="moto-history"></div>
+
+</section>
+
+
+
+<!--==================================================-->
+<!--CIERRE MOTO-->
+<!--==================================================-->
+
+<!--==================================================-->
+<!-- ESTADISTICAS-->
+<!--==================================================-->
+
+<section id="stats-page" class="page hidden">
+
+    </section>
+
+<!--==================================================-->
+<!--CIERRE ESTADISTICAS-->
+<!--==================================================-->
+
+<!--==================================================-->
+<!-- ASISTENTE IA -->
+<!--==================================================-->
+
+<section id="assistant-page" class="page hidden">
+
+        </section>
+
+<!--==================================================-->
+<!--CIERRE ASISTENTE IA-->
+<!--==================================================-->
+
+<!--==================================================-->
+<!-- CONFIGURACION-->
+<!--==================================================-->
+
+<section id="settings-page" class="page hidden">
+
+    </section>
+
+<!--==================================================-->
+<!--CIERRE CONFIGURACION-->
+<!--==================================================-->
+
+
+
+</main>
+
+</div>
+
+
+<!--==================================================-->
+<!-- MODAL NUEVO MOVIMIENTO -->
+<!--==================================================-->
+
+<div
+    id="movement-modal"
+    class="modal"
+    data-theme="income">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="modal-title">
+
+    Nuevo Movimiento
+
+</h2>
+
+            <button
+    id="close-modal"
+    class="modal-close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+    <!--========================-->
+    <!-- SELECTOR DE MOVIMIENTO -->
+    <!--========================-->
+
+    <div class="movement-selector">
+
+        <button class="movement-option active" data-type="ingreso">
+
+            <i class="fa-solid fa-money-bill-trend-up"></i>
+
+            <span>Ingreso</span>
+
+        </button>
+
+        <button class="movement-option" data-type="gasto">
+
+            <i class="fa-solid fa-credit-card"></i>
+
+            <span>Gasto</span>
+
+        </button>
+
+        <button class="movement-option" data-type="ahorro">
+
+            <i class="fa-solid fa-piggy-bank"></i>
+
+            <span>Ahorro</span>
+
+        </button>
+
+    </div>
+
+    <!--========================-->
+    <!-- MONTO -->
+    <!--========================-->
+
+    <div class="form-group">
+
+        <label>
+
+            Monto
+
+        </label>
+
+        <input
+            id="movement-amount"
+            type="text"
+            placeholder="$0"
+            autocomplete="off">
+
+    </div>
+
+    <!--========================-->
+    <!-- CATEGORÍA -->
+    <!--========================-->
+
+    <div class="form-group">
+
+        <label>
+
+            Categoría
+
+        </label>
+
+        <select id="movement-category">
+
+            <option value="">
+
+                Seleccionar...
+
+            </option>
+
+        </select>
+
+    </div>
+
+    <div
+    class="form-group hidden"
+    id="goal-select-group">
+
+    <label>
+
+        Objetivo
+
+    </label>
+
+    <select id="movement-goal">
+
+        <option value="">
+
+            Seleccionar objetivo...
+
+        </option>
+
+    </select>
+
+</div>
+
+    <!--========================-->
+    <!-- DESCRIPCIÓN -->
+    <!--========================-->
+
+    <div class="form-group">
+
+        <label>
+
+            Descripción
+
+        </label>
+
+        <input
+            id="movement-description"
+            type="text"
+            placeholder="Ej: Pago de nómina">
+
+    </div>
+
+    <!--========================-->
+    <!-- FECHA -->
+    <!--========================-->
+
+    <div class="form-group">
+
+        <label>
+
+            Fecha
+
+        </label>
+
+        <input
+            id="movement-date"
+            type="date">
+
+    </div>
+
+    <!--========================-->
+    <!-- BOTÓN -->
+    <!--========================-->
+
+    <button id="save-movement">
+
+        <i class="fa-solid fa-floppy-disk"></i>
+
+        Guardar ingreso
+
+    </button>
+
+</div>
+
+    </div>
+
+</div>
+<!--==================================================-->
+<!-- MODAL NUEVO OBJETIVO -->
+<!--==================================================-->
+
+<div id="goal-modal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+
+                <i class="fa-solid fa-bullseye"></i>
+
+                Nuevo objetivo
+
+            </h2>
+
+            <button
+    id="close-goal-modal"
+    class="modal-close">
+
+    <i class="fa-solid fa-xmark"></i>
+
+</button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <!-- Nombre -->
+
+            <div class="form-group">
+
+                <label>Nombre del objetivo</label>
+
+                <input
+                    id="goal-name"
+                    type="text"
+                    placeholder="">
+
+            </div>
+
+            <!-- Emoji -->
+
+            <div class="form-group">
+
+                <label>Emoji / Icono</label>
+
+                <input
+                    id="goal-icon"
+                    type="text"
+                    maxlength="2"
+                    placeholder="">
+
+            </div>
+
+            <!-- Valor -->
+
+            <div class="form-group">
+
+                <label>Valor objetivo</label>
+
+               <input
+    id="goal-target"
+    type="text"
+    inputmode="numeric"
+    placeholder="$0">
+
+            </div>
+
+            
+
+            <!-- Fecha -->
+
+            <div class="form-group">
+
+                <label>Fecha límite (opcional)</label>
+
+                <input
+                    id="goal-date"
+                    type="date">
+
+            </div>
+
+            <!-- Principal -->
+
+            <div class="checkbox-group">
+
+                <label>
+
+                    <input
+                        id="goal-main"
+                        type="checkbox">
+
+                    Convertir en meta principal
+
+                </label>
+
+            </div>
+
+            <!-- Botones -->
+
+            <div class="goal-modal-actions">
+
+                <button
+                    id="cancel-goal"
+                    class="secondary-btn">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    id="save-goal"
+                    class="primary-btn">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Crear objetivo
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--==================================================-->
+<!-- MODAL MANTENIMIENTO -->
+<!--==================================================-->
+
+<div
+    id="maintenance-modal"
+    class="modal">
+
+    <div class="modal-content">
+
+        <!-- Header -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="maintenance-subtitle">
+
+    MANTENIMIENTO
+
+</span>
+
+                <h2 id="maintenance-title">
+
+                    🛢 Registrar cambio de aceite
+
+                </h2>
+
+            </div>
+
+            <button
+    id="close-maintenance-modal"
+    class="modal-close"> 
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <!-- Body -->
+
+        <div class="modal-body">
+
+            <!-- Tipos -->
+
+            <section>
+
+                <h3>
+
+                    Tipo de mantenimiento
+
+                </h3>
+
+                <div
+                    id="maintenance-types"
+                    class="maintenance-types">
+
+                </div>
+
+            </section>
+
+            <!-- Información -->
+
+            <section class="maintenance-grid">
+
+                <div class="form-group">
+
+                    <label>
+
+                        Kilometraje actual
+
+                    </label>
+
+                    <input
+                        id="maintenance-km"
+                        type="number">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Fecha
+
+                    </label>
+
+                    <input
+                        id="maintenance-date"
+                        type="date">
+
+                </div>
+
+            </section>
+
+            <!-- Próximo -->
+
+            <section>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Próximo mantenimiento (km)
+
+                    </label>
+
+                    <input
+                        id="maintenance-next-km"
+                        type="number">
+
+                </div>
+
+            </section>
+
+            <!-- Observaciones -->
+
+            <section>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Observaciones
+
+                    </label>
+
+                    <textarea
+
+                        id="maintenance-notes"
+
+                        rows="4"
+
+                        placeholder="Escribe detalles del mantenimiento...">
+
+                    </textarea>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+
+        <div class="modal-footer">
+
+            <button
+                id="cancel-maintenance"
+                class="btn-secondary">
+
+                Cancelar
+
+            </button>
+
+            <button
+                id="save-maintenance"
+                class="btn-primary">
+
+                Registrar mantenimiento
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--==================================================-->
+<!-- JAVASCRIPT -->
+<!--==================================================-->
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/date.js"></script>
+<script src="assets/js/dateUtils.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/navigation.js"></script>
+<script src="assets/js/movements.js"></script>
+<script src="assets/js/history.js"></script>
+<script src="assets/js/goals.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/moto.js"></script>
+<script src="assets/js/motoModal.js"></script>
+<script src="assets/js/app.js"></script>
+
+</body>
+
+</html>
