@@ -145,97 +145,110 @@ function renderMoto(){
 
 function renderMotoHero(){
 
-    const hero = document.getElementById("moto-hero");
+    const hero =
+        document.getElementById("moto-hero");
 
     if(!hero) return;
 
-   hero.innerHTML = `
+
+    hero.innerHTML = `
 
 <section class="moto-hero">
 
+
+    <!--========================================
+        SELECTOR DE VEHÍCULO
+    ========================================-->
+
+    <div class="vehicle-selector">
+
+        <button
+            type="button"
+            onclick="toggleVehicleSelector()"
+            class="vehicle-selector-button"
+        >
+
+            <span>
+
+                ${
+                    finTrack.moto.tipo === "moto"
+                        ? "🏍️"
+                        : "🚗"
+                }
+
+            </span>
+
+            <span>
+
+                ${finTrack.moto.marca}
+                ${finTrack.moto.modelo}
+
+            </span>
+
+            <i class="fa-solid fa-chevron-down"></i>
+
+        </button>
+
+    </div>
+
+
+    <!--========================================
+        FOTO DEL VEHÍCULO
+    ========================================-->
+
     <div class="moto-hero-image">
 
-    <img
-        src="${
-            finTrack.moto.foto ||
-            "assets/images/moto2.png"
-        }"
-        alt="${
-            finTrack.moto.marca
-        } ${
-            finTrack.moto.modelo
-        }"
-    >
+        <img
+            src="${
+                finTrack.moto.foto ||
+                "assets/images/moto2.png"
+            }"
+            alt="${
+                finTrack.moto.marca
+            } ${
+                finTrack.moto.modelo
+            }"
+        >
 
-</div>
+    </div>
 
-<div class="moto-hero-content">
 
-    <span class="moto-brand">
+    <!--========================================
+        INFORMACIÓN DEL VEHÍCULO
+    ========================================-->
 
-        ${
-            finTrack.moto.marca
-        }
+    <div class="moto-hero-info">
 
-    </span>
+        <span class="moto-brand">
 
-    <h1>
+            ${finTrack.moto.marca}
 
-        ${
-            finTrack.moto.modelo
-        }
+        </span>
 
-    </h1>
 
-    <p class="moto-last-service">
+        <h1>
 
-        ${
-            finTrack.moto.tipo === "moto"
-                ? "🏍️ Moto"
-                : "🚗 Automóvil"
-        }
+            ${finTrack.moto.modelo}
 
-    </p>
+        </h1>
 
 
         <p class="moto-last-service">
 
-        </p>
-
-        <div class="vehicle-selector">
-
-    <button
-        type="button"
-        onclick="toggleVehicleSelector()"
-        class="vehicle-selector-button"
-    >
-
-        <span>
-
             ${
                 finTrack.moto.tipo === "moto"
-                    ? "🏍️"
-                    : "🚗"
+                    ? "🏍️ Moto"
+                    : "🚗 Carro"
             }
 
-        </span>
+        </p>
 
-        <span>
+    </div>
 
-            ${
-                finTrack.moto.marca
-            }
-            ${
-                finTrack.moto.modelo
-            }
 
-        </span>
-
-        <i class="fa-solid fa-chevron-down"></i>
-
-    </button>
-
-</div>
+    <!--========================================
+        TARJETAS DEL HERO
+    ========================================-->
 
         <div class="moto-hero-cards">
 

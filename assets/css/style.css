@@ -4142,3 +4142,197 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{
     margin-left: auto;
 
 }
+
+/*======================================================
+    VEHÍCULO — HERO
+======================================================*/
+
+.moto-hero {
+    position: relative;
+}
+
+
+.vehicle-selector {
+    position: absolute;
+
+    top: 20px;
+    left: 20px;
+
+    z-index: 5;
+}
+
+
+.vehicle-selector-button {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 9px 14px;
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.06);
+
+    color: inherit;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+}
+
+
+.vehicle-selector-button:hover {
+
+    background: rgba(255,255,255,0.10);
+
+}
+
+
+.moto-hero-main {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 40px;
+
+}
+
+
+.moto-hero-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+}
+
+
+.moto-hero-info h1 {
+
+    margin: 4px 0;
+
+}
+
+
+.moto-hero-info .moto-last-service {
+
+    margin: 4px 0 0;
+
+}
+
+/*======================================================
+    HERO — POSICIÓN DE INFORMACIÓN
+======================================================*/
+
+.moto-hero {
+    position: relative;
+}
+
+
+/* Información del vehículo */
+
+.moto-hero-info {
+
+    position: absolute;
+
+    left: calc(50% + 580px);
+
+    top: 50%;
+
+    transform: translateY(-280%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+}
+
+
+/* Marca */
+
+.moto-hero-info .moto-brand {
+
+    margin-bottom: 4px;
+
+}
+
+
+/* Modelo */
+
+.moto-hero-info h1 {
+
+    margin: 0;
+
+}
+
+
+/* Tipo */
+
+.moto-hero-info .moto-last-service {
+
+    margin-top: 8px;
+
+}
+
+
+/*======================================================
+    TARJETAS DEL HERO
+======================================================*/
+
+.moto-hero-cards {
+
+    margin-top: 450px;
+
+}
+
+
+@media (max-width: 768px){
+
+    .moto-hero-info{
+
+        position: static;
+
+        transform: none;
+
+        margin-top: 20px;
+
+        align-items: center;
+
+        text-align: center;
+
+    }
+
+    .moto-hero-image{
+
+        display: flex;
+
+        justify-content: center;
+
+    }
+
+    .moto-hero-cards{
+
+        margin-top: 24px;
+
+    }
+
+}
