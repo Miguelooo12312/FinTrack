@@ -4012,3 +4012,133 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{
     line-height:1.2;
 
 }
+
+/*======================================================
+    BOTÓN SECUNDARIO — MODAL KILOMETRAJE
+======================================================*/
+
+#mileage-modal .secondary-btn{
+
+    background: #242424;
+
+    color: #ffffff;
+
+    border: 1px solid #3a3a3a;
+
+    border-radius: 12px;
+
+    padding: 12px 20px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+}
+
+
+#mileage-modal .secondary-btn:hover{
+
+    background: #303030;
+
+    border-color: #555;
+
+}
+
+#mileage-modal .modal-actions{
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+}
+
+#mileage-modal .modal-actions .secondary-btn{
+
+    margin-right: auto;
+
+}
+
+#mileage-modal .modal-actions .primary-btn{
+
+    margin-left: auto;
+
+}
+
+#mileage-modal .modal-actions {
+    margin-top: 28px;
+}
+
+/*======================================================
+    MODAL DOCUMENTOS — ESTILO
+======================================================*/
+
+#document-date-modal .modal-actions{
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+    margin-top: 28px;
+
+}
+
+
+#document-date-modal .secondary-btn{
+
+    margin-right: auto;
+
+    background: #242424;
+
+    color: #ffffff;
+
+    border: 1px solid #3a3a3a;
+
+    border-radius: 12px;
+
+    padding: 12px 20px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+}
+
+
+#document-date-modal .secondary-btn:hover{
+
+    background: #303030;
+
+    border-color: #555;
+
+}
+
+
+#document-date-modal .primary-btn{
+
+    margin-left: auto;
+
+}

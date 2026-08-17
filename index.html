@@ -107,7 +107,7 @@
 
         <i class="fa-solid fa-motorcycle"></i>
 
-        <span>Moto</span>
+        <span>Vehiculos</span>
 
     </li>
 
@@ -938,6 +938,8 @@ class="page hidden">
 
 </div>
 
+
+
 <!--==================================================-->
 <!-- MODAL MANTENIMIENTO -->
 <!--==================================================-->
@@ -1100,6 +1102,167 @@ class="page hidden">
 
                 Registrar mantenimiento
 
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--==================================================-->
+<!-- MODAL KILOMETRAJE -->
+<!--==================================================-->
+
+<div
+    id="mileage-modal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                <i class="fa-solid fa-gauge-high"></i>
+                Actualizar kilometraje
+            </h2>
+
+            <button
+                type="button"
+                id="close-mileage-modal"
+                class="modal-close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label>
+                    Kilometraje actual
+                </label>
+
+                <input
+                    id="mileage-input"
+                    type="number"
+                    min="0"
+                    step="1"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="cancel-mileage"
+                class="secondary-btn"
+            >
+
+                Cancelar
+
+            </button>
+
+
+            <button
+                type="button"
+                id="save-mileage"
+                class="primary-btn"
+            >
+
+                Guardar kilometraje
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--==================================================-->
+<!-- MODAL DOCUMENTOS -->
+<!--==================================================-->
+
+<div
+    id="document-date-modal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="maintenance-subtitle">
+                    DOCUMENTO
+                </span>
+
+                <h2 id="document-date-title">
+                    Actualizar documento
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                id="close-document-date-modal"
+                class="modal-close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label for="document-date-input">
+                    Fecha de vencimiento
+                </label>
+
+                <input
+                    type="date"
+                    id="document-date-input"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="cancel-document-date"
+                class="secondary-btn"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                id="save-document-date"
+                class="primary-btn"
+            >
+                <i class="fa-solid fa-floppy-disk"></i>
+                Guardar
             </button>
 
         </div>

@@ -117,6 +117,8 @@ moto:{
 
     foto:"assets/images/moto.png",
 
+    tipo:"moto",
+
   recordatorios:{
 
     aceite:{

@@ -153,25 +153,95 @@ function renderMotoHero(){
 
 <section class="moto-hero">
 
+    <div class="moto-hero-image">
+
     <img
-        src="assets/images/moto2.png"
-        alt="Suzuki GSX125">
+        src="${
+            finTrack.moto.foto ||
+            "assets/images/moto2.png"
+        }"
+        alt="${
+            finTrack.moto.marca
+        } ${
+            finTrack.moto.modelo
+        }"
+    >
 
-    <div class="moto-hero-content">
+</div>
 
-        <span class="moto-brand">
+<div class="moto-hero-content">
+
+    <span class="moto-brand">
+
+        ${
+            finTrack.moto.marca
+        }
+
+    </span>
+
+    <h1>
+
+        ${
+            finTrack.moto.modelo
+        }
+
+    </h1>
+
+    <p class="moto-last-service">
+
+        ${
+            finTrack.moto.tipo === "moto"
+                ? "🏍️ Moto"
+                : "🚗 Automóvil"
+        }
+
+    </p>
 
 
         <p class="moto-last-service">
 
- 
         </p>
+
+        <div class="vehicle-selector">
+
+    <button
+        type="button"
+        onclick="toggleVehicleSelector()"
+        class="vehicle-selector-button"
+    >
+
+        <span>
+
+            ${
+                finTrack.moto.tipo === "moto"
+                    ? "🏍️"
+                    : "🚗"
+            }
+
+        </span>
+
+        <span>
+
+            ${
+                finTrack.moto.marca
+            }
+            ${
+                finTrack.moto.modelo
+            }
+
+        </span>
+
+        <i class="fa-solid fa-chevron-down"></i>
+
+    </button>
+
+</div>
 
         <div class="moto-hero-cards">
 
          <article
     class="moto-info-card editable"
-    onclick="editMotoMileage()">
+    onclick="openMileageModal()">
 
     <small>
 
@@ -346,7 +416,16 @@ function createReminderCard({
 
     return `
 
-    <article class="moto-reminder-card ${status}">
+    <article
+    class="moto-reminder-card ${status}"
+    ${(
+        type === "soat" ||
+        type === "tecnomecanica"
+    )
+        ? `onclick="openDocumentDateModal('${type}')"`
+        : ""
+    }
+>
 
         <div class="moto-reminder-top">
 
@@ -568,11 +647,15 @@ function renderMotoStats(){
             ${createStatCard({
 
                 icon:"⏭",
-
-                value:"Próximamente",
-
+            
+                value:stats.proximo
+            
+                    ? `${maintenanceCatalog[stats.proximo.tipo].nombre} · ${stats.proximo.restante.toLocaleString("es-CO")} km`
+            
+                    : "Sin programar",
+            
                 title:"Próximo"
-
+            
             })}
 
         </div>
@@ -687,15 +770,94 @@ function getKmSinceOil(){
 
 function getMotoStats(){
 
-    const historial = finTrack.moto.historial;
+    const historial =
+        finTrack.moto.historial || [];
 
-    return{
 
-        total: historial.length,
+    /*========================================
+        TOTAL DE MANTENIMIENTOS
+    ========================================*/
 
-        ultimo: historial.at(-1) || null,
+    const total =
+        historial.length;
 
-        promedio: 0
+
+    /*========================================
+        ÚLTIMO MANTENIMIENTO
+    ========================================*/
+
+    const ultimo =
+        historial.length
+
+            ? [...historial].sort(
+
+                (a,b) =>
+                    new Date(b.fecha) -
+                    new Date(a.fecha)
+
+            )[0]
+
+            : null;
+
+
+    /*========================================
+        PRÓXIMO MANTENIMIENTO
+    ========================================*/
+
+    const tiposKm = [
+
+        "aceite",
+        "pastillas",
+        "kit"
+
+    ];
+
+
+    let proximo = null;
+
+
+    tiposKm.forEach(tipo => {
+
+        const recordatorio =
+            finTrack.moto.recordatorios[tipo];
+
+
+        if(!recordatorio) return;
+
+
+        const restante =
+            recordatorio.proximoCambioKm -
+            finTrack.moto.kilometraje;
+
+
+        if(restante <= 0) return;
+
+
+        if(
+            !proximo ||
+            restante < proximo.restante
+        ){
+
+            proximo = {
+
+                tipo,
+
+                restante
+
+            };
+
+        }
+
+    });
+
+
+    return {
+
+        total,
+
+        ultimo,
+
+        proximo
 
     };
 
@@ -810,6 +972,34 @@ function renderMotoHistory(){
 
     renderMotoHistoryList();
 
+    const searchInput =
+    document.getElementById("moto-search");
+
+const filterSelect =
+    document.getElementById("moto-filter");
+
+
+if(searchInput){
+
+    searchInput.addEventListener(
+        "input",
+        renderMotoHistoryList
+    );
+
+}
+
+
+if(filterSelect){
+
+    filterSelect.addEventListener(
+        "change",
+        renderMotoHistoryList
+    );
+
+}
+
+    initMotoHistoryControls();
+
 }
 
 /*======================================================
@@ -818,31 +1008,110 @@ function renderMotoHistory(){
 
 function renderMotoHistoryList(){
 
-    const list=document.getElementById(
-
-        "moto-history-list"
-
-    );
+    const list =
+        document.getElementById(
+            "moto-history-list"
+        );
 
     if(!list) return;
 
-    if(!finTrack.moto.historial.length){
 
-        list.innerHTML=`
+    const historial =
+        finTrack.moto.historial || [];
+
+
+    /*========================================
+        CONTROLES
+    ========================================*/
+
+    const searchInput =
+        document.getElementById(
+            "moto-search"
+        );
+
+    const filterSelect =
+        document.getElementById(
+            "moto-filter"
+        );
+
+
+    const search =
+        searchInput
+            ? searchInput.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    const filter =
+        filterSelect
+            ? filterSelect.value
+            : "todos";
+
+
+    /*========================================
+        FILTRAR
+    ========================================*/
+
+    const filtered =
+        historial.filter(item => {
+
+            const matchesSearch =
+                !search ||
+
+                (item.nombre || "")
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                (item.tipo || "")
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                (item.observaciones || "")
+                    .toLowerCase()
+                    .includes(search);
+
+
+            const matchesFilter =
+                filter === "todos" ||
+
+                item.tipo === filter;
+
+
+            return (
+                matchesSearch &&
+                matchesFilter
+            );
+
+        });
+
+
+    /*========================================
+        SIN RESULTADOS
+    ========================================*/
+
+    if(!filtered.length){
+
+        list.innerHTML = `
 
             <div class="moto-empty">
 
-                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <i class="fa-solid fa-magnifying-glass"></i>
 
                 <h3>
 
-                    Aún no hay mantenimientos
+                    No encontramos resultados
 
                 </h3>
 
                 <p>
 
-                    Cuando registres el primero aparecerá aquí.
+                    Prueba con otro término
+                    o cambia el filtro.
 
                 </p>
 
@@ -854,21 +1123,32 @@ function renderMotoHistoryList(){
 
     }
 
-    const groups=groupMotoHistory();
 
-    list.innerHTML="";
+    /*========================================
+        AGRUPAR RESULTADOS
+    ========================================*/
+
+    const groups =
+        groupMotoHistory(filtered);
+
+
+    list.innerHTML = "";
+
 
     Object.entries(groups).forEach(
 
-        ([month,items])=>{
+        ([month, items]) => {
 
-            const total = items.length;
+            const total =
+                items.length;
 
-            list.innerHTML+=`
+
+            list.innerHTML += `
 
                 <section class="moto-month">
 
-                    <header class="moto-month-header">
+                    <header
+                        class="moto-month-header">
 
                         <div>
 
@@ -880,7 +1160,8 @@ function renderMotoHistoryList(){
 
                             <small>
 
-                                ${items.length} mantenimientos
+                                ${items.length}
+                                mantenimientos
 
                             </small>
 
@@ -888,15 +1169,22 @@ function renderMotoHistoryList(){
 
                         <strong>
 
-    ${total} registros
+                            ${total} registros
 
-</strong>
+                        </strong>
 
                     </header>
 
-                    <div class="moto-month-list">
+                    <div
+                        class="moto-month-list">
 
-                    ${items.map(createMaintenanceCard).join("")}
+                        ${
+                            items
+                                .map(
+                                    createMaintenanceCard
+                                )
+                                .join("")
+                        }
 
                     </div>
 
@@ -910,42 +1198,85 @@ function renderMotoHistoryList(){
 
 }
 
+/*======================================================
+    CONTROLES DEL HISTORIAL
+======================================================*/
+
+function initMotoHistoryControls(){
+
+    const searchInput =
+        document.getElementById(
+            "moto-search"
+        );
+
+    const filterSelect =
+        document.getElementById(
+            "moto-filter"
+        );
+
+
+    if(searchInput){
+
+        searchInput.addEventListener(
+            "input",
+            renderMotoHistoryList
+        );
+
+    }
+
+
+    if(filterSelect){
+
+        filterSelect.addEventListener(
+            "change",
+            renderMotoHistoryList
+        );
+
+    }
+
+}
 
 /*======================================================
     AGRUPAR HISTORIAL POR MES
 ======================================================*/
 
-function groupMotoHistory(){
+function groupMotoHistory(
+    historial = finTrack.moto.historial || []
+){
 
-    const groups={};
+    const groups = {};
 
-    finTrack.moto.historial.forEach(item=>{
 
-        const date=new Date(item.fecha);
+    historial.forEach(item => {
 
-        const key=date.toLocaleDateString(
+        const date =
+            new Date(item.fecha);
 
-            "es-CO",
 
-            {
+        const key =
+            date.toLocaleDateString(
 
-                month:"long",
+                "es-CO",
 
-                year:"numeric"
+                {
+                    month: "long",
+                    year: "numeric"
+                }
 
-            }
+            );
 
-        );
 
         if(!groups[key]){
 
-            groups[key]=[];
+            groups[key] = [];
 
         }
+
 
         groups[key].push(item);
 
     });
+
 
     return groups;
 
@@ -974,11 +1305,11 @@ const color=getMaintenanceColor(item.tipo);
 
         });
 
-    return `
+        return `
 
-    <article class="moto-history-card ${color}"
-
-        <div class="moto-history-icon">
+        <article class="moto-history-card ${color}">
+    
+            <div class="moto-history-icon">
 
             ${icon}
 
@@ -1048,94 +1379,6 @@ const color=getMaintenanceColor(item.tipo);
     CRUD MANTENIMIENTOS
 ======================================================*/
 
-function saveMaintenance(){
-
-    const maintenance = {
-
-        id: editingMaintenanceId || crypto.randomUUID(),
-
-        tipo: currentMaintenanceType,
-
-        nombre:
-            maintenanceCatalog[currentMaintenanceType].nombre,
-
-        icono:
-            maintenanceCatalog[currentMaintenanceType].icono,
-
-        fecha:
-            document.getElementById(
-                "maintenance-date"
-            ).value,
-
-        kilometraje:
-            Number(
-                document.getElementById(
-                    "maintenance-km"
-                ).value
-            ),
-
-        proximoKm:
-            Number(
-                document.getElementById(
-                    "maintenance-next-km"
-                ).value
-            ),
-
-        observaciones:
-            document.getElementById(
-                "maintenance-notes"
-            ).value.trim()
-
-    };
-
-
-    /*========================================
-        EDITAR
-    ========================================*/
-
-    if(editingMaintenanceId){
-
-        const index =
-            finTrack.moto.historial.findIndex(
-
-                item =>
-                    item.id === editingMaintenanceId
-
-            );
-
-        if(index !== -1){
-
-            finTrack.moto.historial[index] =
-                maintenance;
-
-        }
-
-    }
-
-
-    /*========================================
-        NUEVO
-    ========================================*/
-
-    else{
-
-        finTrack.moto.historial.push(
-
-            maintenance
-
-        );
-
-    }
-
-
-    editingMaintenanceId = null;
-
-    updateMotoData();
-
-    closeMaintenanceModal();
-
-}
-
 
 /*======================================================
     EDITAR MANTENIMIENTO
@@ -1163,23 +1406,10 @@ function editMaintenance(id){
     }
 
 
-    /*========================================
-        ABRIR MODAL PRIMERO
-    ========================================*/
-
     openMaintenanceModal();
-
-
-    /*========================================
-        ESTABLECER ID DE EDICIÓN DESPUÉS
-    ========================================*/
 
     editingMaintenanceId = id;
 
-
-    /*========================================
-        CARGAR DATOS
-    ========================================*/
 
     selectMaintenanceType(
         maintenance.tipo
@@ -1224,6 +1454,8 @@ function editMaintenance(id){
     }
 
 }
+
+
 /*======================================================
     ELIMINAR MANTENIMIENTO
 ======================================================*/
@@ -1294,13 +1526,12 @@ function updateMileage(km){
     return true;
 
 }
+
 /*======================================================
     EXPORTS
 ======================================================*/
 
 window.renderMoto = renderMoto;
-
-window.saveMaintenance = saveMaintenance;
 
 window.editMaintenance = editMaintenance;
 
@@ -1308,35 +1539,6 @@ window.deleteMaintenance = deleteMaintenance;
 
 window.updateMileage = updateMileage;
 
-function editMotoMileage(){
-
-    const actual =
-        finTrack.moto.kilometraje;
-
-
-    const nuevo =
-        prompt(
-            "Actualizar kilometraje",
-            actual
-        );
-
-
-    if(nuevo === null){
-
-        return;
-
-    }
-
-
-    if(!updateMileage(nuevo)){
-
-        alert(
-            "El kilometraje no es válido o no puede ser menor al actual."
-        );
-
-    }
-
-}
 
 /*======================================================
     ACTUALIZAR DATOS MOTO
@@ -1355,44 +1557,175 @@ function updateMotoData(){
     RECONSTRUIR RECORDATORIOS
 ======================================================*/
 
+/*======================================================
+    RECONSTRUIR RECORDATORIOS
+======================================================*/
+
 function rebuildMotoReminders(){
+
+    const historial =
+        finTrack.moto.historial || [];
+
+    const recordatorios =
+        finTrack.moto.recordatorios || {};
+
+
+    /*========================================
+        OBTENER EL ÚLTIMO MANTENIMIENTO
+        DE CADA TIPO
+    ========================================*/
 
     const latest = {};
 
-    [...finTrack.moto.historial]
 
-    .sort(
+    historial.forEach(item => {
 
-        (a,b)=>
+        if(!item.tipo) return;
 
-            new Date(a.fecha)-
+        const actual = latest[item.tipo];
 
-            new Date(b.fecha)
 
-    )
+        if(!actual){
 
-    .forEach(item=>{
+            latest[item.tipo] = item;
 
-        latest[item.tipo]=item;
+            return;
 
-    });
+        }
 
-    Object.entries(latest).forEach(([tipo,item])=>{
 
-        const reminder=finTrack.moto.recordatorios[tipo];
+        const fechaActual =
+            new Date(actual.fecha);
 
-        if(!reminder) return;
+        const fechaNueva =
+            new Date(item.fecha);
 
-        reminder.ultimoCambioKm=item.kilometraje;
 
-        reminder.proximoCambioKm=item.proximoKm;
+        if(fechaNueva >= fechaActual){
 
-        reminder.fecha=item.fecha;
+            latest[item.tipo] = item;
 
-        reminder.observaciones=item.observaciones;
+        }
 
     });
 
-    saveData(finTrack);
+
+    /*========================================
+        ACTUALIZAR RECORDATORIOS
+    ========================================*/
+
+    Object.entries(latest).forEach(
+
+        ([tipo, item]) => {
+
+            const reminder =
+                recordatorios[tipo];
+
+            if(!reminder) return;
+
+
+            reminder.ultimoCambioKm =
+                item.kilometraje;
+
+
+            reminder.proximoCambioKm =
+                item.proximoKm;
+
+
+            reminder.fecha =
+                item.fecha;
+
+
+            reminder.observaciones =
+                item.observaciones || "";
+
+        }
+
+    );
 
 }
+
+/*======================================================
+    MODAL KILOMETRAJE
+======================================================*/
+
+function openMileageModal(){
+
+    const modal =
+        document.getElementById("mileage-modal");
+
+    if(!modal) return;
+
+    const input =
+        document.getElementById("mileage-input");
+
+    if(input){
+
+        input.value =
+            finTrack.moto.kilometraje;
+
+    }
+
+    modal.classList.add("active");
+
+    if(input){
+
+        input.focus();
+
+    }
+
+}
+
+
+function closeMileageModal(){
+
+    const modal =
+        document.getElementById("mileage-modal");
+
+    if(!modal) return;
+
+    modal.classList.remove("active");
+
+}
+
+
+function saveMileage(){
+
+    const input =
+        document.getElementById("mileage-input");
+
+    if(!input) return;
+
+    const km =
+        Number(input.value);
+
+    if(!Number.isFinite(km)){
+
+        alert("Ingresa un kilometraje válido.");
+
+        return;
+
+    }
+
+    if(!updateMileage(km)){
+
+        alert(
+            "El kilometraje no puede ser menor al actual."
+        );
+
+        return;
+
+    }
+
+    closeMileageModal();
+
+}
+
+
+/*======================================================
+    EXPORTAR
+======================================================*/
+
+window.openMileageModal = openMileageModal;
+window.closeMileageModal = closeMileageModal;
+window.saveMileage = saveMileage;
