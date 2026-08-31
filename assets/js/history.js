@@ -231,7 +231,7 @@ if (collapsed) {
 
                     <h3>${movement.descripcion || movement.categoria}</h3>
 
-                    <p>${movement.categoria}</p>
+                    <p>${movement.categoria} · <span class="method-badge ${movement.medio || "unclassified"}">${movement.medio === "efectivo" ? "Efectivo" : movement.medio === "digital" ? "Digital" : "Sin clasificar"}</span> <time class="movement-date" datetime="${movement.fecha}">${formatMovementDate(movement.fecha)}</time></p>
 
                 </div>
 
@@ -496,4 +496,10 @@ function formatMonth(month){
 
     return months[Number(parts[1])-1]+" "+parts[0];
 
+}
+
+function formatMovementDate(dateString){
+    if(!dateString) return "Sin fecha";
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString("es-CO", { day:"numeric", month:"short", year:"numeric" });
 }

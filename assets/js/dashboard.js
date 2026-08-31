@@ -16,6 +16,8 @@ function updateDashboard() {
     document.getElementById("ahorros").textContent =
         "$" + finTrack.finanzas.ahorros.toLocaleString("es-CO");
 
+    updateMoneyLocations();
+
         renderDashboardInsights();
 
         updateDashboardMessages();
@@ -98,22 +100,10 @@ function renderDashboardInsights(){
 ======================================================*/
 
 function getBalanceMessage(){
-
-    const saldo = finTrack.finanzas.saldo;
-
-    if(saldo <= 0){
-
-        return "🚨 Tu saldo disponible está en cero.";
-
-    }
-
-    if(saldo < 100000){
-
-        return "⚠️ Tu saldo disponible empieza a ser bajo.";
-
-    }
-
-    return "💳 Tienes saldo suficiente para operar con tranquilidad.";
+    const { ingresos, gastos, ahorros } = finTrack.finanzas;
+    if(!ingresos) return "Registra tu primer ingreso para empezar a ver recomendaciones.";
+    const freeRate = Math.round(Math.max(0, ingresos - gastos - ahorros) / ingresos * 100);
+    return freeRate < 15 ? `Después de gastos y ahorro te queda el ${freeRate}% de tus ingresos mensuales.` : `Conservas el ${freeRate}% de tus ingresos después de gastos y ahorro.`;
 
 }
 
@@ -122,16 +112,12 @@ function getBalanceMessage(){
 ======================================================*/
 
 function getIncomeMessage(){
-
-    const ingresos = finTrack.finanzas.ingresos;
-
-    if(ingresos === 0){
-
-        return "👋 Registra tu primer ingreso.";
-
-    }
-
-    return `📈 Has registrado $${ingresos.toLocaleString("es-CO")} en ingresos.`;
+    const current = getMonthTotals(monthKey());
+    const previous = getMonthTotals(shiftMonth(monthKey(), -1));
+    const change = percentChange(current.ingresos, previous.ingresos);
+    if(!current.ingresos) return "Aún no tienes ingresos registrados este mes.";
+    if(change === null) return "Este será tu punto de partida para comparar el próximo mes.";
+    return change === 0 ? "Tus ingresos se mantienen frente al mes pasado." : `Tus ingresos van un ${Math.abs(change)}% ${change > 0 ? "por encima" : "por debajo"} del mes pasado.`;
 
 }
 
@@ -140,28 +126,12 @@ function getIncomeMessage(){
 ======================================================*/
 
 function getExpenseMessage(){
-
-    const{
-
-        ingresos,
-
-        gastos
-
-    } = finTrack.finanzas;
-
-    if(gastos === 0){
-
-        return "✅ No has registrado gastos.";
-
-    }
-
-    if(gastos > ingresos){
-
-        return "🚨 Este mes gastaste más de lo que ingresaste.";
-
-    }
-
-    return "💸 Tus gastos están bajo control.";
+    const totals = getMonthTotals(monthKey());
+    const categories = getExpenseCategories(monthKey());
+    const top = Object.entries(categories).sort((a,b) => b[1] - a[1])[0];
+    if(!totals.gastos) return "Aún no hay gastos; tu análisis se activará al registrar el primero.";
+    if(totals.gastos > totals.ingresos) return "Tus gastos superan los ingresos del mes: revisa el detalle en Estadísticas.";
+    return top ? `${top[0]} es tu categoría con mayor impacto este mes.` : "Tus gastos están dentro de lo registrado para este mes.";
 
 }
 
@@ -170,16 +140,11 @@ function getExpenseMessage(){
 ======================================================*/
 
 function getSavingMessage(){
-
-    const ahorro = finTrack.finanzas.ahorros;
-
-    if(ahorro === 0){
-
-        return "🌱 Empieza a construir tu futuro.";
-
-    }
-
-    return `🎯 Has ahorrado $${ahorro.toLocaleString("es-CO")}.`;
+    const mainGoal = finTrack.objetivos.find(goal => goal.principal) || finTrack.objetivos[0];
+    if(!mainGoal) return "Crea un objetivo para darle dirección a tus ahorros.";
+    const progress = Math.min(100, Math.round(mainGoal.ahorrado / mainGoal.objetivo * 100));
+    const advice = getGoalAdvice(mainGoal);
+    return `${mainGoal.icono || "🎯"} ${mainGoal.nombre} va en ${progress}%. ${advice.amount ? `Próximo ritmo sugerido: ${formatMoney(advice.amount)} por ${advice.period}.` : advice.text}`;
 
 }
 
@@ -252,4 +217,28 @@ function initDashboardShortcuts(){
 
     });
 
+}
+
+/* Saldo acumulado por medio. Un ahorro sale del medio elegido y queda
+   representado en la meta, por lo que no se suma como dinero disponible. */
+function getMoneyLocations(){
+    return finTrack.movimientos.reduce((totals, movement) => {
+        if(!["efectivo", "digital"].includes(movement.medio)){
+            totals.sinClasificar++;
+            return totals;
+        }
+        const change = movement.tipo === "ingreso" ? movement.monto : -movement.monto;
+        totals[movement.medio] += change;
+        return totals;
+    }, { efectivo:0, digital:0, sinClasificar:0 });
+}
+
+function updateMoneyLocations(){
+    const totals = getMoneyLocations();
+    document.getElementById("cash-balance").textContent = formatMoney(totals.efectivo);
+    document.getElementById("digital-balance").textContent = formatMoney(totals.digital);
+    const message = document.getElementById("funds-message");
+    message.textContent = totals.sinClasificar
+        ? `${totals.sinClasificar} movimiento${totals.sinClasificar === 1 ? "" : "s"} sin clasificar. Edítalo${totals.sinClasificar === 1 ? "" : "s"} desde el historial para tener el total exacto.`
+        : "Todos tus movimientos están clasificados por medio.";
 }

@@ -27,10 +27,11 @@ const movementCategories = {
         "Mi novia preciosa",
         "Moto",
         "Servicios",
+        "Ropa",
         "Entretenimiento",
         "Salud",
         "Peluqueada",
-        
+        "Otro",
 
     ],
 
@@ -103,7 +104,11 @@ function loadCategories() {
 
     select.innerHTML = "";
 
-    movementCategories[movementType].forEach(category => {
+    const categories = movementType === "ingreso"
+        ? (finTrack.categorias.ingresos || movementCategories.ingreso)
+        : (finTrack.categorias.gastos || movementCategories.gasto);
+
+    categories.forEach(category => {
 
         const option = document.createElement("option");
 
@@ -122,6 +127,7 @@ function updateMovementTheme() {
     const title = document.getElementById("modal-title");
     const saveButton = document.getElementById("save-movement");
     const goalGroup = document.getElementById("goal-select-group");
+    const methodLabel = document.getElementById("movement-method-label");
 
     switch (movementType) {
 
@@ -130,6 +136,7 @@ function updateMovementTheme() {
             saveButton.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar ingreso`;
             saveButton.classList.remove("expense-btn", "saving-btn");
             saveButton.classList.add("income-btn");
+            methodLabel.textContent = "¿Cómo recibiste este dinero?";
             break;
 
         case "gasto":
@@ -137,6 +144,7 @@ function updateMovementTheme() {
             saveButton.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar gasto`;
             saveButton.classList.remove("income-btn", "saving-btn");
             saveButton.classList.add("expense-btn");
+            methodLabel.textContent = "¿Cómo gastaste este dinero?";
             break;
 
         case "ahorro":
@@ -144,6 +152,7 @@ function updateMovementTheme() {
             saveButton.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar ahorro`;
             saveButton.classList.remove("income-btn", "expense-btn");
             saveButton.classList.add("saving-btn");
+            methodLabel.textContent = "¿Cómo ahorraste este dinero?";
             break;
     }
 
@@ -231,6 +240,7 @@ function clearMovementForm(){
     document.getElementById("movement-amount").value="";
 
     document.getElementById("movement-description").value="";
+    document.getElementById("movement-method").value="";
 
     document.getElementById("movement-date").valueAsDate=new Date();
 
@@ -261,6 +271,7 @@ function saveMovement() {
     console.log("Entró a saveMovement");
 
     const amount = getAmountValue();
+    const method = document.getElementById("movement-method").value;
 
     if (amount <= 0) {
 
@@ -268,6 +279,11 @@ function saveMovement() {
 
         return;
 
+    }
+
+    if(!method){
+        alert("Indica si este movimiento fue en efectivo o por una plataforma digital.");
+        return;
     }
 
     if(
@@ -324,6 +340,8 @@ if(movementType === "ahorro"){
         : null,
 
     descripcion: document.getElementById("movement-description").value,
+
+    medio: method,
 
     fecha: document.getElementById("movement-date").value
 
@@ -401,6 +419,8 @@ if(movementType === "ahorro"){
 
     updateDashboard();
 
+    renderAnalytics?.();
+
     renderGoal();
 
     renderHistory();
@@ -476,6 +496,8 @@ function deleteMovement(id){
 
     updateDashboard();
 
+    renderAnalytics?.();
+
     renderGoal();
 
     renderHistory();
@@ -530,6 +552,12 @@ function editMovement(id){
         "movement-date"
 
     ).value=movement.fecha;
+
+    document.getElementById("movement-method").value = movement.medio || "";
+
+    if(movement.tipo === "ahorro"){
+        document.getElementById("movement-goal").value = movement.objetivoId || "";
+    }
 
     loadCategories();
 

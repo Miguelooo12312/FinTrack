@@ -146,6 +146,10 @@ if(page === "moto"){
 
 }
 
+if(page === "estadisticas"){
+    renderAnalytics();
+}
+
 updateQuickAction(page);
 
 document.getElementById("page-title").textContent =

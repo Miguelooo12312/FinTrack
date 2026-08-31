@@ -29,6 +29,10 @@ initGoalMoneyFormatter();
 
 initMaintenanceModal();
 
+initAssistant();
+
+initSettings();
+
 
 
 document

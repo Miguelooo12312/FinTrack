@@ -384,6 +384,25 @@ class="page">
 
     </article>
 
+    <!-- DISPONIBILIDAD POR MEDIO -->
+    <article class="dashboard-card funds-card">
+
+        <div class="card-top">
+            <div class="card-icon funds"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <span class="card-status">Disponible</span>
+        </div>
+
+        <h3>Tu dinero</h3>
+
+        <div class="funds-breakdown">
+            <div><span><i class="fa-solid fa-wallet"></i> Efectivo</span><strong id="cash-balance">$0</strong></div>
+            <div><span><i class="fa-solid fa-mobile-screen-button"></i> Plataformas digitales</span><strong id="digital-balance">$0</strong></div>
+        </div>
+
+        <p id="funds-message">Clasifica tus movimientos para conocer dónde está tu dinero.</p>
+
+    </article>
+
 
     <!-- RESUMEN -->
 
@@ -598,8 +617,25 @@ class="page hidden">
 <!--==================================================-->
 
 <section id="assistant-page" class="page hidden">
-
+    <div class="page-header">
+        <h2>Asistente IA</h2>
+        <p>Tu copiloto para entender y usar FinTrack.</p>
+    </div>
+    <div class="assistant-layout">
+        <section class="assistant-chat">
+            <div class="assistant-chat-header"><div class="assistant-orb"><i class="fa-solid fa-robot"></i></div><div><h3>FinTrack IA</h3><p>Analiza tus datos directamente en este dispositivo</p></div></div>
+            <div id="assistant-messages" class="assistant-messages" aria-live="polite"></div>
+            <div class="assistant-suggestions" id="assistant-suggestions">
+                <button data-query="¿Cómo van mis gastos este mes?">Gastos del mes</button>
+                <button data-query="¿Cómo voy con mis objetivos?">Mis objetivos</button>
+                <button data-query="¿Cómo está mi vehículo?">Mi vehículo</button>
+                <button data-query="Actualiza el resumen del dashboard">Actualizar resumen</button>
+            </div>
+            <form id="assistant-form" class="assistant-form"><input id="assistant-input" autocomplete="off" placeholder="Ej: ¿En qué gasté más este mes?" aria-label="Mensaje para FinTrack IA"><button type="submit" aria-label="Enviar"><i class="fa-solid fa-paper-plane"></i></button></form>
         </section>
+        <aside class="assistant-side-card"><i class="fa-solid fa-sparkles"></i><h3>Lo que puedo hacer</h3><ul><li>Explicar tus finanzas, metas y vehículo.</li><li>Abrir un ingreso, gasto, ahorro u objetivo nuevo.</li><li>Actualizar el resumen del dashboard.</li><li>Agregar categorías: “agrega categoría de gasto mascotas”.</li></ul></aside>
+    </div>
+    </section>
 
 <!--==================================================-->
 <!--CIERRE ASISTENTE IA-->
@@ -610,7 +646,15 @@ class="page hidden">
 <!--==================================================-->
 
 <section id="settings-page" class="page hidden">
-
+    <div class="page-header"><h2>Configuración</h2><p>Personaliza FinTrack y protege tus datos locales.</p></div>
+    <div class="settings-grid">
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-user"></i><div><h3>Perfil</h3><p>Así te saludará FinTrack y su asistente.</p></div></div><div class="form-group"><label for="settings-name">¿Cómo quieres que te llamemos?</label><input id="settings-name" maxlength="40" placeholder="Tu nombre"></div><button id="save-profile" class="primary-btn">Guardar perfil</button></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-palette"></i><div><h3>Color de enfoque</h3><p>Elige el estilo que más te represente.</p></div></div><div class="theme-options"><button class="theme-option" data-theme="red"><i></i><span>Rojo</span></button><button class="theme-option" data-theme="purple"><i></i><span>Morado</span></button><button class="theme-option" data-theme="blue"><i></i><span>Azul</span></button></div></section>
+        <section class="settings-card settings-card-wide"><div class="settings-card-title"><i class="fa-solid fa-tags"></i><div><h3>Categorías personalizadas</h3><p>Agrega o elimina categorías para ingresos y gastos. Los ahorros siguen conectados a objetivos.</p></div></div><div class="category-manager"><div><h4>Ingresos</h4><div id="income-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="ingresos"><input placeholder="Nueva categoría de ingreso"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div><div><h4>Gastos</h4><div id="expense-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="gastos"><input placeholder="Nueva categoría de gasto"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div></div></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-shield-heart"></i><div><h3>Respaldo de tus datos</h3><p>Guarda una copia o carga tus movimientos de este computador.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Descargar respaldo</button><label class="secondary-btn upload-data"><i class="fa-solid fa-upload"></i> Cargar respaldo<input id="import-data" type="file" accept="application/json"></label></div></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-right-from-bracket"></i><div><h3>Sesión local</h3><p>Actualmente tus datos se guardan solo en este navegador.</p></div></div><button id="local-session-info" class="secondary-btn">Conocer opciones de inicio de sesión</button></section>
+        <section class="settings-card support-card"><i class="fa-solid fa-heart"></i><h3>Apoya al creador</h3><p>El QR de pago requiere el enlace o número de cobro que quieras usar. Cuando lo tengas, lo integramos aquí.</p></section>
+    </div>
     </section>
 
 <!--==================================================-->
@@ -704,6 +748,21 @@ class="page hidden">
             type="text"
             placeholder="$0"
             autocomplete="off">
+
+    </div>
+
+    <!-- MEDIO DE DINERO -->
+    <div class="form-group">
+
+        <label id="movement-method-label">¿Cómo recibiste este dinero?</label>
+
+        <select id="movement-method" required>
+            <option value="">Seleccionar...</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="digital">Billetera digital</option>
+        </select>
+
+      
 
     </div>
 
@@ -1285,6 +1344,8 @@ class="page hidden">
 <script src="assets/js/history.js"></script>
 <script src="assets/js/goals.js"></script>
 <script src="assets/js/analytics.js"></script>
+<script src="assets/js/assistant.js"></script>
+<script src="assets/js/settings.js"></script>
 <script src="assets/js/moto.js"></script>
 <script src="assets/js/motoModal.js"></script>
 <script src="assets/js/app.js"></script>

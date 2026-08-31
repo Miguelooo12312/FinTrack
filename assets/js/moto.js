@@ -7,6 +7,8 @@
 
 let editingMaintenanceId = null;
 
+let newVehiclePhoto = null;
+
 /*======================================================
     CATÁLOGO DE MANTENIMIENTOS
 ======================================================*/
@@ -162,53 +164,146 @@ function renderMotoHero(){
 
     <div class="vehicle-selector">
 
-        <button
-            type="button"
-            onclick="toggleVehicleSelector()"
-            class="vehicle-selector-button"
-        >
+    <button
+        type="button"
+        onclick="toggleVehicleSelector()"
+        class="vehicle-selector-button"
+    >
 
-            <span>
+        <span>
 
-                ${
-                    finTrack.moto.tipo === "moto"
-                        ? "🏍️"
-                        : "🚗"
-                }
+            ${
+                finTrack.moto.tipo === "moto"
+                    ? "🏍️"
+                    : "🚗"
+            }
 
-            </span>
+        </span>
 
-            <span>
+        <span>
+
+            ${finTrack.moto.marca}
+            ${finTrack.moto.modelo}
+
+        </span>
+
+        <i class="fa-solid fa-chevron-down"></i>
+
+    </button>
+
+
+    <div class="vehicle-selector-menu">
+
+        <div class="vehicle-selector-current">
+
+            <small>
+                Vehículo actual
+            </small>
+
+            <strong>
 
                 ${finTrack.moto.marca}
                 ${finTrack.moto.modelo}
 
-            </span>
+            </strong>
 
-            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+
+        <div class="vehicle-selector-list">
+
+            ${(finTrack.vehiculos || [])
+                .map(vehicle => `
+
+                    <div class="vehicle-option-row">
+                        <button
+                            type="button"
+                            class="vehicle-option ${
+                                vehicle.id === finTrack.activeVehicleId
+                                    ? "active"
+                                    : ""
+                            }"
+                            onclick="selectVehicle('${vehicle.id}')"
+                        >
+
+                            <span>
+                                ${vehicle.tipo === "moto" ? "🏍️" : "🚗"}
+                            </span>
+
+                            <span>
+                                ${vehicle.marca} ${vehicle.modelo}
+                            </span>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="delete-vehicle-button"
+                            onclick="deleteVehicle('${vehicle.id}')"
+                            ${
+                                finTrack.vehiculos.length === 1
+                                    ? "disabled title=\"Debes conservar al menos un vehículo\""
+                                    : "title=\"Eliminar vehículo\""
+                            }
+                        >
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                `)
+                .join("")}
+
+        </div>
+
+
+        <button
+            type="button"
+            class="add-vehicle-button"
+            onclick="openAddVehicleModal()"
+        >
+
+            <i class="fa-solid fa-plus"></i>
+
+            Agregar vehículo
 
         </button>
 
     </div>
+
+</div>
 
 
     <!--========================================
         FOTO DEL VEHÍCULO
     ========================================-->
 
+    <div class="moto-hero-main">
+
     <div class="moto-hero-image">
 
-        <img
-            src="${
-                finTrack.moto.foto ||
-                "assets/images/moto2.png"
-            }"
-            alt="${
-                finTrack.moto.marca
-            } ${
-                finTrack.moto.modelo
-            }"
-        >
+        ${
+            finTrack.moto.foto
+                ? `
+                    <img
+                        src="${finTrack.moto.foto}"
+                        alt="${finTrack.moto.marca} ${finTrack.moto.modelo}"
+                    >
+                `
+                : `
+                    <button
+                        type="button"
+                        class="vehicle-image-placeholder"
+                        onclick="openVehiclePhotoPicker()"
+                    >
+                        <i class="fa-solid ${
+                            finTrack.moto.tipo === "moto"
+                                ? "fa-motorcycle"
+                                : "fa-car-side"
+                        }"></i>
+                        <span>Subir foto del vehículo</span>
+                    </button>
+                `
+        }
 
     </div>
 
@@ -246,6 +341,18 @@ function renderMotoHero(){
     </div>
 
 
+    </div>
+
+    <button
+        type="button"
+        class="vehicle-photo-upload"
+        onclick="openVehiclePhotoPicker()"
+    >
+        <i class="fa-solid fa-image"></i>
+        Cambiar foto
+    </button>
+
+
     <!--========================================
         TARJETAS DEL HERO
     ========================================-->
@@ -277,11 +384,369 @@ function renderMotoHero(){
 </strong>
         </div>
 
-    </div>
-
 </section>
 
 `;
+
+}
+
+/*======================================================
+    SELECTOR DE VEHÍCULOS
+======================================================*/
+
+function toggleVehicleSelector(){
+
+    const selector =
+        document.querySelector(
+            ".vehicle-selector"
+        );
+
+    if(!selector) return;
+
+    selector.classList.toggle("active");
+
+}
+
+/*======================================================
+    SELECCIONAR VEHÍCULO
+======================================================*/
+
+function selectVehicle(id){
+
+    const vehicle =
+        finTrack.vehiculos.find(
+            item => item.id === id
+        );
+
+
+    if(!vehicle){
+
+        console.warn(
+            "Vehículo no encontrado:",
+            id
+        );
+
+        return;
+
+    }
+
+
+    finTrack.activeVehicleId =
+        vehicle.id;
+
+
+    /*
+        Por ahora mantenemos compatibilidad
+        con todo el módulo actual.
+    */
+
+    finTrack.moto = vehicle;
+
+
+    /*----------------------------------------
+        CERRAR SELECTOR
+    ----------------------------------------*/
+
+    const selector =
+        document.querySelector(
+            ".vehicle-selector"
+        );
+
+    if(selector){
+
+        selector.classList.remove("active");
+
+    }
+
+
+    /*----------------------------------------
+        ACTUALIZAR VISTA
+    ----------------------------------------*/
+
+    renderMotoHero();
+
+    updateMotoData();
+
+}
+
+function deleteVehicle(id){
+
+    if(finTrack.vehiculos.length === 1){
+
+        alert("Debes conservar al menos un vehículo.");
+
+        return;
+
+    }
+
+    const vehicle = finTrack.vehiculos.find(item => item.id === id);
+
+    if(!vehicle) return;
+
+    const shouldDelete = confirm(
+        `¿Eliminar ${vehicle.marca} ${vehicle.modelo}? Esta acción no se puede deshacer.`
+    );
+
+    if(!shouldDelete) return;
+
+    finTrack.vehiculos = finTrack.vehiculos.filter(
+        item => item.id !== id
+    );
+
+    if(finTrack.activeVehicleId === id){
+
+        const nextVehicle = finTrack.vehiculos[0];
+
+        finTrack.activeVehicleId = nextVehicle.id;
+        finTrack.moto = nextVehicle;
+
+    }
+
+    saveData(finTrack);
+    renderMoto();
+
+}
+
+/*======================================================
+    AGREGAR VEHÍCULO
+======================================================*/
+
+function getNewVehicleReminders(kilometraje){
+
+    return {
+        aceite:{ ultimoCambioKm:kilometraje, proximoCambioKm:kilometraje + 2000, fecha:null, observaciones:"" },
+        pastillas:{ ultimoCambioKm:kilometraje, proximoCambioKm:kilometraje + 8000, fecha:null, observaciones:"" },
+        kit:{ ultimoCambioKm:kilometraje, proximoCambioKm:kilometraje + 18000, fecha:null, observaciones:"" },
+        bateria:{ ultimoCambioKm:0, proximoCambioKm:0, fecha:null, observaciones:"" },
+        llantas:{ ultimoCambioKm:0, proximoCambioKm:0, fecha:null, observaciones:"" },
+        otro:{ ultimoCambioKm:0, proximoCambioKm:0, fecha:null, observaciones:"" },
+        soat:{ vence:"" },
+        tecnomecanica:{ vence:"" }
+    };
+
+}
+
+function readVehiclePhoto(file, onLoad){
+
+    if(!file) return;
+
+    if(!file.type.startsWith("image/")){
+
+        alert("Selecciona una imagen PNG o JPG.");
+
+        return;
+
+    }
+
+    if(file.size > 3 * 1024 * 1024){
+
+        alert("La imagen debe pesar menos de 3 MB.");
+
+        return;
+
+    }
+
+    const reader = new FileReader();
+
+    reader.addEventListener("load", () => onLoad(reader.result));
+
+    reader.readAsDataURL(file);
+
+}
+
+function handleNewVehiclePhoto(event){
+
+    const file = event.target.files[0];
+
+    readVehiclePhoto(file, photo => {
+
+        newVehiclePhoto = photo;
+
+        const helper = document.getElementById("new-vehicle-photo-help");
+
+        if(helper){
+            helper.textContent = "Foto lista para guardar.";
+        }
+
+    });
+
+}
+
+function openVehiclePhotoPicker(){
+
+    const input = document.createElement("input");
+
+    input.type = "file";
+    input.accept = "image/png,image/jpeg";
+
+    input.addEventListener("change", () => {
+
+        readVehiclePhoto(input.files[0], photo => {
+
+            finTrack.moto.foto = photo;
+            saveData(finTrack);
+            renderMoto();
+
+        });
+
+    });
+
+    input.click();
+
+}
+
+function ensureAddVehicleModal(){
+
+    let modal = document.getElementById("add-vehicle-modal");
+
+    if(modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "add-vehicle-modal";
+    modal.className = "modal";
+
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-car-side"></i> Agregar vehículo</h2>
+                <button type="button" class="modal-close" onclick="closeAddVehicleModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveNewVehicle(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-vehicle-type">Tipo</label>
+                        <select id="new-vehicle-type" required>
+                            <option value="moto">Moto</option>
+                            <option value="carro">Carro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-vehicle-brand">Marca</label>
+                        <input id="new-vehicle-brand" type="text" autocomplete="off" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-vehicle-model">Modelo</label>
+                        <input id="new-vehicle-model" type="text" autocomplete="off" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-vehicle-year">Año</label>
+                        <input id="new-vehicle-year" type="number" min="1900" max="2100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-vehicle-mileage">Kilometraje actual</label>
+                        <input id="new-vehicle-mileage" type="number" min="0" value="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-vehicle-photo">Foto del vehículo</label>
+                        <input
+                            id="new-vehicle-photo"
+                            type="file"
+                            accept="image/png,image/jpeg"
+                            onchange="handleNewVehiclePhoto(event)"
+                        >
+                        <small id="new-vehicle-photo-help">
+                            Sube una imagen PNG para una mejor experiencia visual.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="secondary-btn" onclick="closeAddVehicleModal()">Cancelar</button>
+                    <button type="submit" class="primary-btn">Agregar vehículo</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    modal.addEventListener("click", event => {
+
+        if(event.target === modal){
+            closeAddVehicleModal();
+        }
+
+    });
+
+    document.body.appendChild(modal);
+
+    return modal;
+
+}
+
+function openAddVehicleModal(){
+
+    const selector = document.querySelector(".vehicle-selector");
+
+    if(selector){
+        selector.classList.remove("active");
+    }
+
+    newVehiclePhoto = null;
+
+    const modal = ensureAddVehicleModal();
+    const form = modal.querySelector("form");
+    const helper = modal.querySelector("#new-vehicle-photo-help");
+
+    form.reset();
+
+    if(helper){
+        helper.textContent =
+            "Sube una imagen PNG para una mejor experiencia visual.";
+    }
+
+    modal.classList.add("active");
+
+}
+
+function closeAddVehicleModal(){
+
+    const modal = document.getElementById("add-vehicle-modal");
+
+    if(modal){
+        modal.classList.remove("active");
+    }
+
+}
+
+function saveNewVehicle(event){
+
+    event.preventDefault();
+
+    const marca = document.getElementById("new-vehicle-brand").value.trim();
+    const modelo = document.getElementById("new-vehicle-model").value.trim();
+    const tipo = document.getElementById("new-vehicle-type").value;
+    const año = Number(document.getElementById("new-vehicle-year").value) || null;
+    const kilometraje = Number(document.getElementById("new-vehicle-mileage").value);
+
+    if(!marca || !modelo || kilometraje < 0) return;
+
+    const vehicle = {
+        id: crypto.randomUUID(),
+        marca,
+        modelo,
+        tipo,
+        año,
+        kilometraje,
+        estadoIA:"",
+        foto:newVehiclePhoto,
+        recordatorios:getNewVehicleReminders(kilometraje),
+        historial:[]
+    };
+
+    finTrack.vehiculos.push(vehicle);
+    finTrack.activeVehicleId = vehicle.id;
+    finTrack.moto = vehicle;
+
+    saveData(finTrack);
+    closeAddVehicleModal();
+    renderMoto();
 
 }
 
@@ -512,6 +977,12 @@ function calculateReminderStatus(restante){
 
 function calculateDateStatus(fecha){
 
+    if(!fecha){
+
+        return "yellow";
+
+    }
+
     const hoy = new Date();
 
     const vencimiento = new Date(fecha);
@@ -563,6 +1034,12 @@ function getReminderValue(tipo){
     if(tipo==="soat" || tipo==="tecnomecanica"){
 
         const fecha = finTrack.moto.recordatorios[tipo].vence;
+
+        if(!fecha){
+
+            return "Configurar fecha";
+
+        }
 
         const hoy = new Date();
 
@@ -1551,6 +2028,30 @@ window.editMaintenance = editMaintenance;
 window.deleteMaintenance = deleteMaintenance;
 
 window.updateMileage = updateMileage;
+
+window.toggleVehicleSelector =
+    toggleVehicleSelector;
+
+window.selectVehicle =
+    selectVehicle;
+
+window.deleteVehicle =
+    deleteVehicle;
+
+window.openAddVehicleModal =
+    openAddVehicleModal;
+
+window.closeAddVehicleModal =
+    closeAddVehicleModal;
+
+window.saveNewVehicle =
+    saveNewVehicle;
+
+window.handleNewVehiclePhoto =
+    handleNewVehiclePhoto;
+
+window.openVehiclePhotoPicker =
+    openVehiclePhotoPicker;
 
 
 /*======================================================

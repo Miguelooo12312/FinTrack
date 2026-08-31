@@ -286,6 +286,19 @@ function migrateData(data){
 
     });
 
+    // Los movimientos anteriores a esta versión no tenían medio de pago.
+    // Se conservan intactos y se marcan para que el usuario los complete al editarlos.
+    data.movimientos = Array.isArray(data.movimientos) ? data.movimientos : [];
+    data.movimientos.forEach(movement => {
+        if(!["efectivo", "digital"].includes(movement.medio)){
+            movement.medio = "";
+        }
+    });
+
+    data.categorias ||= {};
+    data.categorias.ingresos ||= structuredClone(defaultData.categorias.ingresos);
+    data.categorias.gastos ||= structuredClone(defaultData.categorias.gastos);
+
     return data;
 
 }
@@ -325,6 +338,139 @@ function resetData() {
 
 let finTrack = getData();
 
+const vehicleMaintenanceIntervals = {
+
+    aceite: 2000,
+    pastillas: 8000,
+    kit: 18000,
+    bateria: 0,
+    llantas: 0,
+    otro: 0
+
+};
+
+function normalizeVehicleReminders(vehicle){
+
+    vehicle.recordatorios ||= {};
+
+    Object.entries(vehicleMaintenanceIntervals).forEach(
+        ([type, interval]) => {
+
+            const reminder = vehicle.recordatorios[type] ||= {};
+
+            reminder.ultimoCambioKm ??= 0;
+            reminder.proximoCambioKm ??= 0;
+            reminder.fecha ??= null;
+            reminder.observaciones ??= "";
+
+            /*
+                Un 0/0 representa un recordatorio que aún no ha sido
+                configurado. Al crear un vehículo partimos del kilometraje
+                actual, para no mostrar un mantenimiento ficticiamente vencido.
+            */
+            if(
+                interval > 0 &&
+                reminder.ultimoCambioKm === 0 &&
+                reminder.proximoCambioKm === 0
+            ){
+
+                reminder.ultimoCambioKm = vehicle.kilometraje;
+                reminder.proximoCambioKm =
+                    vehicle.kilometraje + interval;
+
+            }
+
+        }
+    );
+
+    vehicle.recordatorios.soat ||= { vence:"" };
+    vehicle.recordatorios.tecnomecanica ||= { vence:"" };
+
+}
+
+/*======================================================
+    INICIALIZAR VEHÍCULOS
+======================================================*/
+
+function initializeVehicles(){
+
+    /*----------------------------------------
+        CREAR LISTA DE VEHÍCULOS
+    ----------------------------------------*/
+
+    if(!finTrack.vehiculos){
+
+        finTrack.vehiculos = [];
+
+    }
+
+
+    /*----------------------------------------
+        MIGRAR LA MOTO ACTUAL
+    ----------------------------------------*/
+
+    if(
+        finTrack.vehiculos.length === 0 &&
+        finTrack.moto
+    ){
+
+        finTrack.vehiculos.push({
+
+            ...finTrack.moto,
+
+            id:
+                finTrack.moto.id ||
+                crypto.randomUUID()
+
+        });
+
+    }
+
+
+    /*----------------------------------------
+        ESTABLECER VEHÍCULO ACTIVO
+    ----------------------------------------*/
+
+    if(
+        !finTrack.activeVehicleId &&
+        finTrack.vehiculos.length > 0
+    ){
+
+        finTrack.activeVehicleId =
+            finTrack.vehiculos[0].id;
+
+    }
+
+
+    finTrack.vehiculos.forEach(normalizeVehicleReminders);
+
+
+    /*----------------------------------------
+        SINCRONIZAR VEHÍCULO ACTIVO
+    ----------------------------------------*/
+
+    const activeVehicle =
+        finTrack.vehiculos.find(
+            vehicle => vehicle.id === finTrack.activeVehicleId
+        );
+
+    if(activeVehicle){
+
+        finTrack.moto = activeVehicle;
+
+    }
+
+
+    saveData(finTrack);
+
+}
+
+
+/*----------------------------------------
+    EJECUTAR
+----------------------------------------*/
+
+initializeVehicles();
 
 /*======================================================
     RECALCULAR FINANZAS
