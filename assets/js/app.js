@@ -7,6 +7,8 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+recalculateFinances();
+
 updateHeader();
 
 updateDashboard();
@@ -32,6 +34,8 @@ initMaintenanceModal();
 initAssistant();
 
 initSettings();
+
+initAuthModal();
 
 
 

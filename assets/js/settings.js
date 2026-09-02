@@ -2,6 +2,7 @@
 
 const themePalette = {
     red: { primary:"#e50914", hover:"#ff2d38", glow:"rgba(229,9,20,.35)" },
+    pink: { primary:"#ec4899", hover:"#f472b6", glow:"rgba(236,72,153,.35)" },
     purple: { primary:"#8e44ff", hover:"#ab76ff", glow:"rgba(142,68,255,.35)" },
     blue: { primary:"#257cff", hover:"#5ea2ff", glow:"rgba(37,124,255,.35)" }
 };
@@ -37,14 +38,25 @@ function renderCategorySettings(){
 }
 
 function downloadBackup(){
-    const content = JSON.stringify(finTrack, null, 2);
+    const backup = {
+        app:"FinTrack",
+        version:1,
+        exportedAt:new Date().toISOString(),
+        data:finTrack
+    };
+    const content = JSON.stringify(backup, null, 2);
     const blob = new Blob([content], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = `fintrack-respaldo-${new Date().toISOString().slice(0,10)}.json`;
+    link.style.display = "none";
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const status = document.getElementById("backup-status");
+    if(status) status.textContent = `Respaldo preparado: ${link.download}. Revisa la carpeta de descargas de tu navegador.`;
 }
 
 function importBackup(file){
@@ -52,7 +64,8 @@ function importBackup(file){
     const reader = new FileReader();
     reader.onload = () => {
         try{
-            const imported = JSON.parse(reader.result);
+            const parsed = JSON.parse(reader.result);
+            const imported = parsed && parsed.app === "FinTrack" && parsed.data ? parsed.data : parsed;
             if(!imported || !Array.isArray(imported.movimientos) || !imported.usuario) throw new Error("Formato no válido");
             if(!confirm("Esto reemplazará los datos actuales de FinTrack en este navegador. ¿Deseas continuar?")) return;
             finTrack = migrateData(imported);
@@ -61,9 +74,16 @@ function importBackup(file){
             saveData(finTrack);
             applyTheme();
             updateHeader(); updateDashboard(); renderHistory(); renderGoal(); renderAnalytics(); renderCategorySettings();
+            const status = document.getElementById("backup-status");
+            if(status) status.textContent = "Respaldo importado correctamente. Tus datos locales fueron actualizados.";
             alert("Respaldo cargado correctamente.");
         }catch(error){
+            const status = document.getElementById("backup-status");
+            if(status) status.textContent = "No se pudo importar el archivo. Selecciona un respaldo válido de FinTrack.";
             alert("No pudimos cargar ese archivo. Selecciona un respaldo de FinTrack válido.");
+        }finally{
+            const input = document.getElementById("import-data");
+            if(input) input.value = "";
         }
     };
     reader.readAsText(file);
@@ -103,5 +123,7 @@ function initSettings(){
     }));
     document.getElementById("export-data").addEventListener("click", downloadBackup);
     document.getElementById("import-data").addEventListener("change", event => importBackup(event.target.files[0]));
-    document.getElementById("local-session-info").addEventListener("click", () => alert("Ahora FinTrack funciona en modo local: tus datos quedan en este navegador. Para iniciar sesión desde otros dispositivos se necesita conectar una base de datos y autenticación segura. Ya puedes descargar un respaldo aquí y cargarlo en otro navegador."));
+    document.getElementById("local-session-info").addEventListener("click", () => {
+        document.getElementById("open-auth-modal").click();
+    });
 }

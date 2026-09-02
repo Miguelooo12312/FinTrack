@@ -220,11 +220,11 @@
         </button>
 
         <!-- AVATAR -->
-        <div class="user-avatar">
+        <button id="open-auth-modal" class="user-avatar" type="button" aria-label="Iniciar sesión o registrarse">
 
             <i class="fa-solid fa-user"></i>
 
-        </div>
+        </button>
 
     </div>
 
@@ -649,10 +649,10 @@ class="page hidden">
     <div class="page-header"><h2>Configuración</h2><p>Personaliza FinTrack y protege tus datos locales.</p></div>
     <div class="settings-grid">
         <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-user"></i><div><h3>Perfil</h3><p>Así te saludará FinTrack y su asistente.</p></div></div><div class="form-group"><label for="settings-name">¿Cómo quieres que te llamemos?</label><input id="settings-name" maxlength="40" placeholder="Tu nombre"></div><button id="save-profile" class="primary-btn">Guardar perfil</button></section>
-        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-palette"></i><div><h3>Color de enfoque</h3><p>Elige el estilo que más te represente.</p></div></div><div class="theme-options"><button class="theme-option" data-theme="red"><i></i><span>Rojo</span></button><button class="theme-option" data-theme="purple"><i></i><span>Morado</span></button><button class="theme-option" data-theme="blue"><i></i><span>Azul</span></button></div></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-palette"></i><div><h3>Color de enfoque</h3><p>Elige el estilo que más te represente.</p></div></div><div class="theme-options"><button class="theme-option" data-theme="red"><i></i><span>Rojo</span></button><button class="theme-option" data-theme="pink"><i></i><span>Rosa</span></button><button class="theme-option" data-theme="purple"><i></i><span>Morado</span></button><button class="theme-option" data-theme="blue"><i></i><span>Azul</span></button></div></section>
         <section class="settings-card settings-card-wide"><div class="settings-card-title"><i class="fa-solid fa-tags"></i><div><h3>Categorías personalizadas</h3><p>Agrega o elimina categorías para ingresos y gastos. Los ahorros siguen conectados a objetivos.</p></div></div><div class="category-manager"><div><h4>Ingresos</h4><div id="income-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="ingresos"><input placeholder="Nueva categoría de ingreso"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div><div><h4>Gastos</h4><div id="expense-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="gastos"><input placeholder="Nueva categoría de gasto"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div></div></section>
-        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-shield-heart"></i><div><h3>Respaldo de tus datos</h3><p>Guarda una copia o carga tus movimientos de este computador.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Descargar respaldo</button><label class="secondary-btn upload-data"><i class="fa-solid fa-upload"></i> Cargar respaldo<input id="import-data" type="file" accept="application/json"></label></div></section>
-        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-right-from-bracket"></i><div><h3>Sesión local</h3><p>Actualmente tus datos se guardan solo en este navegador.</p></div></div><button id="local-session-info" class="secondary-btn">Conocer opciones de inicio de sesión</button></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-shield-heart"></i><div><h3>Respaldo de tus datos</h3><p>Exporta una copia completa o restaura una copia anterior desde este computador.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Exportar respaldo (.json)</button><label class="secondary-btn upload-data"><i class="fa-solid fa-upload"></i> Importar respaldo<input id="import-data" type="file" accept="application/json,.json"></label></div><p class="backup-help">El respaldo se descarga como un archivo <strong>.json</strong> en la carpeta de descargas configurada en tu navegador. Al importarlo, reemplazarás los datos locales actuales.</p><p id="backup-status" class="backup-status" aria-live="polite"></p></section>
+        <section class="settings-card account-card"><div class="settings-card-title"><i class="fa-solid fa-user-shield"></i><div><h3>Tu cuenta</h3><p>Estás usando FinTrack en modo local. Inicia sesión cuando quieras sincronizar tus datos.</p></div></div><span class="local-mode-badge"><i class="fa-solid fa-hard-drive"></i> Modo local activo</span><button id="local-session-info" class="secondary-btn account-login-btn"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión o crear cuenta</button></section>
         <section class="settings-card support-card"><i class="fa-solid fa-heart"></i><h3>Apoya al creador</h3><p>El QR de pago requiere el enlace o número de cobro que quieras usar. Cuando lo tengas, lo integramos aquí.</p></section>
     </div>
     </section>
@@ -665,6 +665,39 @@ class="page hidden">
 
 </main>
 
+</div>
+
+
+<!--==================================================-->
+<!-- MODAL DE AUTENTICACIÓN (LISTO PARA CONECTAR API) -->
+<!--==================================================-->
+
+<div id="auth-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="auth-experience">
+        <div class="auth-pattern" aria-hidden="true">
+            <i class="fa-solid fa-wallet"></i><i class="fa-solid fa-chart-line"></i><i class="fa-solid fa-car"></i><i class="fa-solid fa-piggy-bank"></i><i class="fa-solid fa-gas-pump"></i><i class="fa-solid fa-chart-pie"></i><i class="fa-solid fa-coins"></i><i class="fa-solid fa-screwdriver-wrench"></i><i class="fa-solid fa-receipt"></i><i class="fa-solid fa-arrow-trend-up"></i><i class="fa-solid fa-motorcycle"></i><i class="fa-solid fa-landmark"></i><i class="fa-solid fa-bullseye"></i><i class="fa-solid fa-credit-card"></i><i class="fa-solid fa-gauge-high"></i><i class="fa-solid fa-calculator"></i><i class="fa-solid fa-chart-column"></i><i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <section class="auth-showcase">
+            <div class="auth-brand"><span class="auth-brand-icon"><i class="fa-solid fa-wallet"></i></span><span>FinTrack</span></div>
+            <div class="auth-showcase-copy"><p class="auth-eyebrow">TU DINERO, CLARO Y CONTIGO</p><h2>Todo lo que importa,<br>en un mismo lugar.</h2><p>Cuando conectes tu cuenta, tus finanzas, metas y vehículos podrán acompañarte en cada dispositivo.</p></div>
+            <div class="auth-feature-list"><span><i class="fa-solid fa-chart-line"></i> Finanzas al día</span><span><i class="fa-solid fa-motorcycle"></i> Tu vehículo bajo control</span><span><i class="fa-solid fa-chart-pie"></i> Decisiones con datos</span></div>
+        </section>
+        <section class="auth-panel">
+            <button id="close-auth-modal" class="auth-close" type="button" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+            <div class="auth-panel-content">
+                <div class="auth-panel-heading"><p>BIENVENIDO A FINTRACK</p><h2 id="auth-title">Iniciar sesión</h2><span id="auth-description">Accede para sincronizar tus datos cuando conectemos la base de datos.</span></div>
+                <form id="auth-form">
+                    <div id="auth-name-group" class="form-group hidden"><label for="auth-name">Nombre</label><input id="auth-name" type="text" autocomplete="name" maxlength="40" placeholder="Cómo quieres que te llamemos"></div>
+                    <div class="form-group"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
+                    <div class="form-group"><label for="auth-password">Contraseña</label><input id="auth-password" type="password" autocomplete="current-password" minlength="8" required placeholder="Mínimo 8 caracteres"></div>
+                    <p id="auth-feedback" class="auth-feedback" aria-live="polite"></p>
+                    <div class="auth-actions"><button id="cancel-auth" class="secondary-btn" type="button">Cancelar</button><button id="submit-auth" class="primary-btn" type="submit">Iniciar sesión <i class="fa-solid fa-arrow-right"></i></button></div>
+                </form>
+                <button id="toggle-auth-mode" class="auth-toggle" type="button">¿No tienes cuenta? <strong>Regístrate</strong></button>
+                <p class="auth-security-note"><i class="fa-solid fa-lock"></i> Tus credenciales nunca se guardan en este navegador.</p>
+            </div>
+        </section>
+    </div>
 </div>
 
 
@@ -1346,6 +1379,7 @@ class="page hidden">
 <script src="assets/js/analytics.js"></script>
 <script src="assets/js/assistant.js"></script>
 <script src="assets/js/settings.js"></script>
+<script src="assets/js/auth.js"></script>
 <script src="assets/js/moto.js"></script>
 <script src="assets/js/motoModal.js"></script>
 <script src="assets/js/app.js"></script>

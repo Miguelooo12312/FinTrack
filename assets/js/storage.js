@@ -490,14 +490,8 @@ function recalculateFinances() {
 
     };
 
+    /* Las tarjetas de actividad describen únicamente el mes en curso. */
     const currentMonthMovements = getCurrentMonthMovements();
-
-    console.log("Movimientos del mes:", currentMonthMovements);
-
-console.log(
-    "Cantidad:",
-    currentMonthMovements.length
-);
 
     currentMonthMovements.forEach(movement=>{
 
@@ -507,15 +501,11 @@ console.log(
 
                 finTrack.finanzas.ingresos += movement.monto;
 
-                finTrack.finanzas.saldo += movement.monto;
-
                 break;
 
             case "gasto":
 
                 finTrack.finanzas.gastos += movement.monto;
-
-                finTrack.finanzas.saldo -= movement.monto;
 
                 break;
 
@@ -523,15 +513,22 @@ console.log(
 
     finTrack.finanzas.ahorros += movement.monto;
 
-    finTrack.finanzas.saldo -= movement.monto;
-
     break;
         }
 
     });
 
-    saveData(finTrack);
+    /* El saldo no es mensual: representa todo el dinero disponible. */
+    finTrack.movimientos.forEach(movement => {
+        if(movement.tipo === "ingreso"){
+            finTrack.finanzas.saldo += movement.monto;
+        }
 
-    console.log(finTrack.finanzas);
+        if(movement.tipo === "gasto" || movement.tipo === "ahorro"){
+            finTrack.finanzas.saldo -= movement.monto;
+        }
+    });
+
+    saveData(finTrack);
 
 }
