@@ -4305,8 +4305,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{
 
 }
 
-.goal-action.contribute { background:rgba(42, 194, 128, .14); color:#72e7ad; }
-.goal-action.contribute:hover { background:#22a868; color:#fff; }
 .goal-main-card { position:relative; overflow:hidden; background:linear-gradient(135deg,rgba(229,9,20,.16),#171717 54%); }
 .goal-main-card::after { content:""; position:absolute; width:230px; height:230px; right:-90px; top:-110px; border:30px solid rgba(255,255,255,.04); border-radius:50%; pointer-events:none; }
 .goal-main-card .goal-progress-fill,.goal-card-small .goal-small-fill { transition:width .65s cubic-bezier(.2,.8,.2,1); }
