@@ -317,6 +317,12 @@ function saveData(data) {
 
     );
 
+    // La copia local permite usar FinTrack aun sin conexión. Si hay sesión,
+    // syncService replica el cambio en segundo plano.
+    if(window.syncService){
+        window.syncService.scheduleSave(data);
+    }
+
 }
 
 /*======================================================
