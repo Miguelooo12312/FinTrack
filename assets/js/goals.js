@@ -21,13 +21,6 @@ function setMainGoal(id){
 
 }
 
-function openGoalDetails(id){
-    const goal = finTrack.objetivos.find(item => item.id === id);
-    if(!goal) return;
-    const percent = Math.min(100, Math.round(goal.ahorrado / goal.objetivo * 100));
-    alert(`${goal.icono || "🎯"} ${goal.nombre}\n\nLlevas ${percent}% (${formatMoney(goal.ahorrado)} de ${formatMoney(goal.objetivo)}).\n${getRemainingDaysText(goal)}\n\nRegistra un ahorro desde “Nuevo movimiento” para avanzar en esta meta.`);
-}
-
 /*======================================================
     EDITAR OBJETIVO
 ======================================================*/
@@ -384,8 +377,7 @@ const advicePrincipal = getGoalAdvice(mainGoal);
 main.innerHTML = `
 
    <article
-    class="goal-main-card"
-    onclick="openGoalDetails(${mainGoal.id})">
+    class="goal-main-card">
 
     <div class="goal-main-top">
 
@@ -598,8 +590,7 @@ const advice = getGoalAdvice(goal);
 container.innerHTML += `
 
 <article
-    class="goal-card-small"
-    onclick="openGoalDetails(${goal.id})">
+    class="goal-card-small">
     
     <div class="goal-small-header">
 
@@ -863,4 +854,3 @@ function getGoalMoneyValue(id){
     window.editGoal = editGoal;
 
     window.deleteGoal = deleteGoal;
-    window.openGoalDetails = openGoalDetails;
