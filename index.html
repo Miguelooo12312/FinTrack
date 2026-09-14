@@ -44,7 +44,7 @@
 
 </head>
 
-<body>
+<body class="auth-loading">
 
     <!--======================================================-->
     <!-- CONTENEDOR PRINCIPAL -->
@@ -548,7 +548,9 @@ class="page">
 id="goals-page"
 class="page hidden">
 
-<div class="page-header">
+<div class="page-header goals-heading">
+
+    <h2>Objetivos</h2>
 
 
 
@@ -651,7 +653,7 @@ class="page hidden">
         <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-user"></i><div><h3>Perfil</h3><p>Así te saludará FinTrack y su asistente.</p></div></div><div class="form-group"><label for="settings-name">¿Cómo quieres que te llamemos?</label><input id="settings-name" maxlength="40" placeholder="Tu nombre"></div><button id="save-profile" class="primary-btn">Guardar perfil</button></section>
         <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-palette"></i><div><h3>Color de enfoque</h3><p>Elige el estilo que más te represente.</p></div></div><div class="theme-options"><button class="theme-option" data-theme="red"><i></i><span>Rojo</span></button><button class="theme-option" data-theme="pink"><i></i><span>Rosa</span></button><button class="theme-option" data-theme="purple"><i></i><span>Morado</span></button><button class="theme-option" data-theme="blue"><i></i><span>Azul</span></button></div></section>
         <section class="settings-card settings-card-wide"><div class="settings-card-title"><i class="fa-solid fa-tags"></i><div><h3>Categorías personalizadas</h3><p>Agrega o elimina categorías para ingresos y gastos. Los ahorros siguen conectados a objetivos.</p></div></div><div class="category-manager"><div><h4>Ingresos</h4><div id="income-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="ingresos"><input placeholder="Nueva categoría de ingreso"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div><div><h4>Gastos</h4><div id="expense-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="gastos"><input placeholder="Nueva categoría de gasto"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div></div></section>
-        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-shield-heart"></i><div><h3>Respaldo de tus datos</h3><p>Exporta una copia completa o restaura una copia anterior desde este computador.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Exportar respaldo (.json)</button><label class="secondary-btn upload-data"><i class="fa-solid fa-upload"></i> Importar respaldo<input id="import-data" type="file" accept="application/json,.json"></label></div><p class="backup-help">El respaldo se descarga como un archivo <strong>.json</strong> en la carpeta de descargas configurada en tu navegador. Al importarlo, reemplazarás los datos locales actuales.</p><p id="backup-status" class="backup-status" aria-live="polite"></p></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-cloud-arrow-up"></i><div><h3>Migrar datos anteriores</h3><p>Conserva tus movimientos locales: intégralos una sola vez a la cuenta que tienes iniciada.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Descargar copia (.json)</button><label class="secondary-btn upload-data"><i class="fa-solid fa-file-import"></i> Migrar archivo a mi cuenta<input id="import-data" type="file" accept="application/json,.json"></label></div><p class="backup-help">La migración combina los movimientos y objetivos del archivo con tu cuenta, evita duplicados y los sincroniza en la nube. Debes iniciar sesión antes de usarla.</p><p id="backup-status" class="backup-status" aria-live="polite"></p></section>
         <section class="settings-card account-card"><div class="settings-card-title"><i class="fa-solid fa-user-shield"></i><div><h3>Tu cuenta</h3><p id="account-status-text">Estás usando FinTrack en modo local. Inicia sesión cuando quieras sincronizar tus datos.</p></div></div><span id="account-mode-badge" class="local-mode-badge"><i class="fa-solid fa-hard-drive"></i> Modo local activo</span><button id="local-session-info" class="secondary-btn account-login-btn"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión o crear cuenta</button><button id="account-signout" class="secondary-btn account-login-btn hidden" type="button"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button></section>
         <section class="settings-card support-card"><i class="fa-solid fa-heart"></i><h3>Apoya al creador</h3><p>El QR de pago requiere el enlace o número de cobro que quieras usar. Cuando lo tengas, lo integramos aquí.</p></section>
     </div>

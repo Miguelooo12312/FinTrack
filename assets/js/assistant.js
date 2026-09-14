@@ -26,6 +26,19 @@ function getTopExpenseAnswer(){
     return top ? `Llevas ${assistantMoney(totals.gastos)} en gastos este mes. Tu categoría principal es ${top[0]} con ${assistantMoney(top[1])}.` : `Llevas ${assistantMoney(totals.gastos)} en gastos este mes.`;
 }
 
+function getHistoricalExpenseAnswer(){
+    const largest = getLargestExpense();
+    if(!largest) return "Aún no hay gastos registrados. Cuando tengas datos, podré encontrar el gasto más alto de toda tu historia.";
+    return `Tu gasto más alto de todo el historial fue ${assistantMoney(largest.monto)} en ${largest.categoria || "Sin categoría"}, el ${largest.fecha || "día sin fecha"}.${largest.descripcion ? ` Fue: “${largest.descripcion}”.` : ""}`;
+}
+
+function getComparisonAnswer(){
+    const current=getMonthTotals(monthKey()), previous=getMonthTotals(shiftMonth(monthKey(),-1));
+    const income=percentChange(current.ingresos,previous.ingresos), expense=percentChange(current.gastos,previous.gastos);
+    const phrase=(value,label)=>value===null ? `No hay ${label} del mes anterior para comparar` : `${label} ${Math.abs(value)}% ${value>0?"por encima":"por debajo"}`;
+    return `Comparando con el mes pasado: ${phrase(income,"ingresos")} y ${phrase(expense,"gastos")}. Este mes te quedan ${assistantMoney(current.ingresos-current.gastos-current.ahorros)} después de gastos y ahorros.`;
+}
+
 function getGoalsAnswer(){
     if(!finTrack.objetivos.length) return "Todavía no tienes objetivos. Puedes escribirme “agrega un objetivo” para crear el primero.";
     const main = finTrack.objetivos.find(goal => goal.principal) || finTrack.objetivos[0];
@@ -87,6 +100,8 @@ function handleAssistantCommand(rawQuery){
         openAssistantMovement("ahorro");
         return "Abrí un nuevo ahorro. Debes elegir el objetivo al que irá ese dinero.";
     }
+    if(/mayor.*gasto|gasto.*mayor|historico|historia/.test(query)) return getHistoricalExpenseAnswer();
+    if(/compar|ultimo.*mes|mes.*pasado|tendencia/.test(query)) return getComparisonAnswer();
     if(/vehiculo|moto|mantenimiento|aceite|kilometraje/.test(query)) return getVehicleAnswer();
     if(/objetivo|meta|ahorro/.test(query)) return getGoalsAnswer();
     if(/efectivo|digital|plataforma/.test(query)){
@@ -98,8 +113,8 @@ function handleAssistantCommand(rawQuery){
         const totals = getMonthTotals(monthKey());
         return `Este mes registras ${assistantMoney(totals.ingresos)} en ingresos, ${assistantMoney(totals.gastos)} en gastos y ${assistantMoney(totals.ahorros)} en ahorros. Tu saldo mensual es ${assistantMoney(totals.ingresos - totals.gastos - totals.ahorros)}.`;
     }
-    if(/hola|ayuda|puedes hacer/.test(query)) return "Puedo responder sobre gastos, dinero, objetivos y vehículo. También puedo abrir formularios: “agrega un gasto”, “agrega un objetivo”, o gestionar categorías desde el chat.";
-    return "Puedo ayudarte con tus gastos, saldo, objetivos, vehículo y acciones de FinTrack. Prueba: “¿en qué gasté más?”, “¿cómo va mi meta?” o “agrega un gasto”.";
+    if(/hola|ayuda|puedes hacer/.test(query)) return "Claro. Puedo comparar ingresos y gastos, encontrar tu gasto histórico más alto, explicarte objetivos y vehículo, crear movimientos u objetivos, y gestionar categorías. Dime lo que necesitas con tus propias palabras.";
+    return "No estoy seguro de haber entendido eso, pero puedo ayudarte. Prueba con “compara mis meses”, “¿cuál fue mi mayor gasto?”, “¿cómo va mi meta?” o “agrega un gasto”.";
 }
 
 function initAssistant(){

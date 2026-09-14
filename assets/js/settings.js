@@ -62,31 +62,56 @@ function downloadBackup(){
 function importBackup(file){
     if(!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
         try{
             const parsed = JSON.parse(reader.result);
             const imported = parsed && parsed.app === "FinTrack" && parsed.data ? parsed.data : parsed;
             if(!imported || !Array.isArray(imported.movimientos) || !imported.usuario) throw new Error("Formato no válido");
-            if(!confirm("Esto reemplazará los datos actuales de FinTrack en este navegador. ¿Deseas continuar?")) return;
-            finTrack = migrateData(imported);
+            if(!syncService.user) throw new Error("Inicia sesión antes de migrar tus datos a tu cuenta.");
+            if(!confirm("Se integrarán los movimientos y objetivos de este respaldo a tu cuenta. No se borrarán los datos que ya tienes en FinTrack. ¿Continuar?")) return;
+            finTrack = mergeImportedData(finTrack, migrateData(imported));
             initializeVehicles();
             recalculateFinances();
             saveData(finTrack);
+            await syncService.uploadNow(finTrack);
             applyTheme();
             updateHeader(); updateDashboard(); renderHistory(); renderGoal(); renderAnalytics(); renderCategorySettings();
             const status = document.getElementById("backup-status");
-            if(status) status.textContent = "Respaldo importado correctamente. Tus datos locales fueron actualizados.";
-            alert("Respaldo cargado correctamente.");
+            if(status) status.textContent = "Datos anteriores migrados y sincronizados con tu cuenta.";
+            alert("Tus datos anteriores ya fueron migrados a tu cuenta.");
         }catch(error){
             const status = document.getElementById("backup-status");
-            if(status) status.textContent = "No se pudo importar el archivo. Selecciona un respaldo válido de FinTrack.";
-            alert("No pudimos cargar ese archivo. Selecciona un respaldo de FinTrack válido.");
+            if(status) status.textContent = error.message || "No se pudo migrar el archivo. Selecciona un respaldo válido de FinTrack.";
+            alert(error.message || "No pudimos cargar ese archivo. Selecciona un respaldo de FinTrack válido.");
         }finally{
             const input = document.getElementById("import-data");
             if(input) input.value = "";
         }
     };
     reader.readAsText(file);
+}
+
+function movementFingerprint(movement){
+    return [movement.tipo, movement.fecha, movement.monto, movement.categoria, movement.descripcion || ""].join("|");
+}
+
+function mergeImportedData(current, imported){
+    const merged = migrateData(structuredClone(current));
+    const known = new Set((merged.movimientos || []).map(movementFingerprint));
+    (imported.movimientos || []).forEach(movement => {
+        const fingerprint = movementFingerprint(movement);
+        if(!known.has(fingerprint)){
+            const copy = structuredClone(movement);
+            if(merged.movimientos.some(item => String(item.id) === String(copy.id))) copy.id = `${copy.id}-${crypto.randomUUID()}`;
+            merged.movimientos.push(copy); known.add(fingerprint);
+        }
+    });
+    const goalKeys = new Set((merged.objetivos || []).map(goal => `${goal.nombre}|${goal.objetivo}`));
+    (imported.objetivos || []).forEach(goal => {
+        const key = `${goal.nombre}|${goal.objetivo}`;
+        if(!goalKeys.has(key)){ merged.objetivos.push(structuredClone(goal)); goalKeys.add(key); }
+    });
+    return merged;
 }
 
 function initSettings(){

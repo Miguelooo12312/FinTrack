@@ -21,6 +21,25 @@ function setMainGoal(id){
 
 }
 
+function addGoalContribution(id){
+    const goal = finTrack.objetivos.find(item => item.id === id);
+    if(!goal) return;
+    const raw = prompt(`¿Cuánto quieres aportar a “${goal.nombre}”?`, "");
+    if(raw === null) return;
+    const amount = Number(raw.replace(/[^0-9]/g, ""));
+    if(!amount || amount <= 0) return alert("Escribe un valor válido para el aporte.");
+    goal.ahorrado += amount;
+    finTrack.movimientos.push({ id:Date.now(), tipo:"ahorro", monto:amount, categoria:goal.nombre, objetivoId:goal.id, descripcion:`Aporte rápido a ${goal.nombre}`, medio:"", fecha:new Date().toISOString().slice(0,10) });
+    recalculateFinances(); saveData(finTrack); renderGoal(); updateDashboard(); renderAnalytics?.();
+}
+
+function openGoalDetails(id){
+    const goal = finTrack.objetivos.find(item => item.id === id);
+    if(!goal) return;
+    const percent = Math.min(100, Math.round(goal.ahorrado / goal.objetivo * 100));
+    alert(`${goal.icono || "🎯"} ${goal.nombre}\n\nLlevas ${percent}% (${formatMoney(goal.ahorrado)} de ${formatMoney(goal.objetivo)}).\n${getRemainingDaysText(goal)}\n\nUsa el botón + Aportar para avanzar sin abrir otro formulario.`);
+}
+
 /*======================================================
     EDITAR OBJETIVO
 ======================================================*/
@@ -501,6 +520,8 @@ main.innerHTML = `
 
     <div class="goal-actions">
 
+        <button class="goal-action contribute" title="Agregar aporte" onclick="event.stopPropagation(); addGoalContribution(${mainGoal.id})"><i class="fa-solid fa-plus"></i></button>
+
         <button
     class="goal-action edit"
     title="Editar objetivo"
@@ -712,6 +733,8 @@ container.innerHTML += `
 
     <div class="goal-actions">
 
+           <button class="goal-action contribute" title="Agregar aporte" onclick="event.stopPropagation(); addGoalContribution(${goal.id})"><i class="fa-solid fa-plus"></i></button>
+
            <button
     class="goal-action edit"
     title="Editar objetivo"
@@ -849,5 +872,5 @@ function getGoalMoneyValue(id){
     window.editGoal = editGoal;
 
     window.deleteGoal = deleteGoal;
-
-    
+    window.addGoalContribution = addGoalContribution;
+    window.openGoalDetails = openGoalDetails;

@@ -5,10 +5,15 @@ const syncService = {
     client:null, user:null, timer:null, applyingRemote:false, channel:null,
     get configured(){ return Boolean(window.FINTRACK_SUPABASE_URL && window.FINTRACK_SUPABASE_ANON_KEY && window.supabase); },
     async initialize(){
-        if(!this.configured){ this.renderAccount(); return; }
+        // El login es la primera pantalla. La app solo se revela al terminar
+        // de comprobar una sesión existente para evitar un parpadeo del panel.
+        document.body.classList.add("auth-loading");
+        document.getElementById("auth-modal")?.classList.add("active");
+        if(!this.configured){ this.renderAccount(); document.body.classList.remove("auth-loading"); return; }
         this.client = window.supabase.createClient(window.FINTRACK_SUPABASE_URL, window.FINTRACK_SUPABASE_ANON_KEY, { auth:{persistSession:true, autoRefreshToken:true} });
         const {data:{session}} = await this.client.auth.getSession();
         await this.setSession(session);
+        document.body.classList.remove("auth-loading");
         this.client.auth.onAuthStateChange(async (event, session) => {
             await this.setSession(session);
             if(event === "PASSWORD_RECOVERY") document.dispatchEvent(new Event("fintrack-password-recovery"));
@@ -18,7 +23,10 @@ const syncService = {
         const previous = this.user?.id;
         this.user = session?.user || null;
         this.renderAccount();
-        if(this.user && previous !== this.user.id){ await this.loadRemoteData(); this.subscribe(); }
+        if(this.user && previous !== this.user.id){
+            await this.loadRemoteData(); this.subscribe();
+            document.getElementById("auth-modal")?.classList.remove("active");
+        }
         if(!this.user && this.channel){ this.client.removeChannel(this.channel); this.channel = null; }
     },
     async loadRemoteData(){
@@ -49,6 +57,10 @@ const syncService = {
         if(!this.user || !this.client || this.applyingRemote) return;
         const {error} = await this.client.from("fintrack_profiles").upsert({ user_id:this.user.id, data, updated_at:new Date().toISOString() }, {onConflict:"user_id"});
         if(error) console.error("No se pudieron sincronizar los datos de FinTrack.", error);
+    },
+    async uploadNow(data = finTrack){
+        if(!this.user) throw new Error("Inicia sesión antes de migrar tus datos.");
+        await this.flush(data);
     },
     subscribe(){
         if(this.channel) this.client.removeChannel(this.channel);
