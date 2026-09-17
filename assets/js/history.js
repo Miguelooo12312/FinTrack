@@ -216,6 +216,16 @@ if (collapsed) {
                     sign = "+";
 
                 break;
+                case "prestamo":
+                    icon = "fa-hand-holding-dollar";
+                    color = "expense";
+                    sign = "-";
+                break;
+                case "recuperacion":
+                    icon = "fa-hand-holding-heart";
+                    color = "income";
+                    sign = "+";
+                break;
 
             }
 
@@ -231,7 +241,7 @@ if (collapsed) {
 
                     <h3>${movement.descripcion || movement.categoria}</h3>
 
-                    <p>${movement.categoria} · <span class="method-badge ${movement.medio || "unclassified"}">${movement.medio === "efectivo" ? "Efectivo" : movement.medio === "digital" ? "Digital" : "Sin clasificar"}</span> <time class="movement-date" datetime="${movement.fecha}">${formatMovementDate(movement.fecha)}</time></p>
+                    <p>${movement.tipo === "prestamo" ? `Prestado a ${movement.persona} · vence ${movement.fechaLimite}` : movement.categoria} · <span class="method-badge ${movement.medio || "unclassified"}">${movement.medio === "efectivo" ? "Efectivo" : movement.medio === "digital" ? "Digital" : "Sin clasificar"}</span> <time class="movement-date" datetime="${movement.fecha}">${formatMovementDate(movement.fecha)}</time></p>
 
                 </div>
 
@@ -242,6 +252,8 @@ if (collapsed) {
                 </div>
 
                 <div class="history-actions">
+
+                    ${movement.tipo === "prestamo" && !movement.pagado ? `<button class="loan-paid-btn" data-id="${movement.id}" title="Marcar como pagado"><i class="fa-solid fa-circle-check"></i></button>` : ""}
 
                     <button class="edit-btn" data-id="${movement.id}">
 
@@ -300,6 +312,10 @@ if (collapsed) {
             };
 
         });
+
+    document.querySelectorAll(".loan-paid-btn").forEach(button => {
+        button.onclick = () => confirmLoanRepayment(Number(button.dataset.id));
+    });
 
         /*======================================================
     EVENTO ABRIR / CERRAR MES

@@ -14,6 +14,7 @@
 ======================================================*/
 
 const STORAGE_KEY = "fintrack_data";
+const SESSION_STARTED_KEY = "fintrack_session_started";
 
 /*======================================================
     DATOS INICIALES
@@ -231,10 +232,24 @@ function getData() {
 
     }
 
-    saveData(defaultData);
+    const clean = createPrivateData();
+    saveData(clean);
+    return clean;
 
-    return structuredClone(defaultData);
+}
 
+/* Un navegador sin sesión nunca debe mostrar información de demostración ni
+   datos de la persona que utilizó FinTrack antes. */
+function createPrivateData(){
+    const clean = structuredClone(defaultData);
+    clean.usuario = {nombre:""};
+    clean.movimientos = [];
+    clean.objetivos = [];
+    clean.vehiculos = [];
+    clean.activeVehicleId = null;
+    clean.moto = null;
+    clean.transferencias = [];
+    return clean;
 }
 /*======================================================
     MIGRAR DATOS
@@ -258,7 +273,7 @@ function migrateData(data){
 
     });
 
-    Object.keys(defaultData.moto).forEach(key=>{
+    if(data.moto){ Object.keys(defaultData.moto).forEach(key=>{
 
         if(data.moto[key]===undefined){
 
@@ -284,7 +299,7 @@ function migrateData(data){
 
         }
 
-    });
+    }); }
 
     // Los movimientos anteriores a esta versión no tenían medio de pago.
     // Se conservan intactos y se marcan para que el usuario los complete al editarlos.
@@ -298,6 +313,7 @@ function migrateData(data){
     data.categorias ||= {};
     data.categorias.ingresos ||= structuredClone(defaultData.categorias.ingresos);
     data.categorias.gastos ||= structuredClone(defaultData.categorias.gastos);
+    data.transferencias = Array.isArray(data.transferencias) ? data.transferencias : [];
 
     return data;
 
@@ -394,6 +410,13 @@ function normalizeVehicleReminders(vehicle){
 
 }
 
+function clearPrivateData(){
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(SESSION_STARTED_KEY);
+    finTrack = createPrivateData();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(finTrack));
+}
+
 /*======================================================
     INICIALIZAR VEHÍCULOS
 ======================================================*/
@@ -466,6 +489,11 @@ function initializeVehicles(){
 
     }
 
+    if(!activeVehicle){
+        finTrack.moto = null;
+        finTrack.activeVehicleId = null;
+    }
+
 
     saveData(finTrack);
 
@@ -504,6 +532,7 @@ function recalculateFinances() {
         switch (movement.tipo) {
 
             case "ingreso":
+            case "recuperacion":
 
                 finTrack.finanzas.ingresos += movement.monto;
 
@@ -526,11 +555,11 @@ function recalculateFinances() {
 
     /* El saldo no es mensual: representa todo el dinero disponible. */
     finTrack.movimientos.forEach(movement => {
-        if(movement.tipo === "ingreso"){
+        if(movement.tipo === "ingreso" || movement.tipo === "recuperacion"){
             finTrack.finanzas.saldo += movement.monto;
         }
 
-        if(movement.tipo === "gasto" || movement.tipo === "ahorro"){
+        if(movement.tipo === "gasto" || movement.tipo === "ahorro" || movement.tipo === "prestamo"){
             finTrack.finanzas.saldo -= movement.monto;
         }
     });

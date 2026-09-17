@@ -2,7 +2,7 @@
 
 /* La clave anon no concede privilegios: RLS en schema.sql protege cada fila. */
 const syncService = {
-    client:null, user:null, timer:null, applyingRemote:false, channel:null,
+    client:null, user:null, timer:null, sessionTimer:null, applyingRemote:false, channel:null,
     get configured(){ return Boolean(window.FINTRACK_SUPABASE_URL && window.FINTRACK_SUPABASE_ANON_KEY && window.supabase); },
     async initialize(){
         // El login es la primera pantalla. La app solo se revela al terminar
@@ -25,15 +25,49 @@ const syncService = {
         this.renderAccount();
         if(this.user && previous !== this.user.id){
             await this.loadRemoteData(); this.subscribe();
+            this.armSessionExpiry();
             document.getElementById("auth-modal")?.classList.remove("active");
+            window.setTimeout(() => checkDueLoans?.(), 700);
+            if(localStorage.getItem("fintrack_show_welcome") === "1"){
+                localStorage.removeItem("fintrack_show_welcome");
+                window.setTimeout(showWelcomeTour, 350);
+            }
         }
-        if(!this.user && this.channel){ this.client.removeChannel(this.channel); this.channel = null; }
+        if(!this.user){
+            clearTimeout(this.sessionTimer);
+            if(this.channel){ this.client.removeChannel(this.channel); this.channel = null; }
+            this.clearPrivateView();
+        }
+    },
+    armSessionExpiry(){
+        const started = Number(localStorage.getItem(SESSION_STARTED_KEY)) || Date.now();
+        localStorage.setItem(SESSION_STARTED_KEY, String(started));
+        clearTimeout(this.sessionTimer);
+        const remaining = Math.max(0, 24 * 60 * 60 * 1000 - (Date.now() - started));
+        this.sessionTimer = setTimeout(() => this.signOut(), remaining);
+    },
+    clearPrivateView(){
+        clearPrivateData();
+        this.refreshInterface();
+        const modal = document.getElementById("auth-modal");
+        modal?.classList.add("active");
+    },
+    async signOut(){
+        if(this.client) await this.client.auth.signOut();
+        this.clearPrivateView();
     },
     async loadRemoteData(){
         const {data:profile, error} = await this.client.from("fintrack_profiles").select("data").eq("user_id", this.user.id).maybeSingle();
         if(error){ console.error("No se pudieron descargar los datos de FinTrack.", error); return; }
         if(profile?.data && Object.keys(profile.data).length) this.applyRemoteData(profile.data);
-        else await this.flush(finTrack); // Primera sesión: sube los datos locales existentes.
+        else {
+            if(this.newAccountPending){
+                finTrack = createPrivateData();
+                finTrack.usuario.nombre = this.user.user_metadata?.name || "";
+                this.newAccountPending = false;
+            }
+            await this.flush(finTrack);
+        }
     },
     applyRemoteData(remoteData){
         this.applyingRemote = true;
@@ -46,7 +80,7 @@ const syncService = {
     },
     refreshInterface(){
         applyTheme?.(); updateHeader?.(); updateDashboard?.(); renderHistory?.();
-        renderGoal?.(); renderAnalytics?.(); renderCategorySettings?.();
+        renderGoal?.(); renderAnalytics?.(); renderCategorySettings?.(); updateVehicleAccess?.();
     },
     scheduleSave(data){
         if(!this.user || this.applyingRemote) return;
@@ -78,10 +112,13 @@ const syncService = {
         const login = document.getElementById("local-session-info");
         const signout = document.getElementById("account-signout");
         const avatar = document.getElementById("open-auth-modal");
+        const menuEmail = document.getElementById("account-menu-email");
         if(text) text.textContent = loggedIn ? `Sesión iniciada como ${this.user.email}. Tus cambios se sincronizan entre dispositivos.` : "Estás usando FinTrack en modo local. Inicia sesión cuando quieras sincronizar tus datos.";
         if(badge) badge.innerHTML = loggedIn ? '<i class="fa-solid fa-cloud"></i> Sincronización activa' : '<i class="fa-solid fa-hard-drive"></i> Modo local activo';
         login?.classList.toggle("hidden", loggedIn); signout?.classList.toggle("hidden", !loggedIn);
         if(avatar) avatar.setAttribute("aria-label", loggedIn ? "Cuenta y sincronización activas" : "Iniciar sesión o registrarse");
+        if(menuEmail) menuEmail.textContent = loggedIn ? this.user.email : "Tu cuenta";
+        if(!loggedIn) document.getElementById("account-menu")?.classList.add("hidden");
     }
 };
 window.syncService = syncService;
@@ -89,8 +126,10 @@ window.syncService = syncService;
 const authService = {
     async signIn({email, password}){ const {error} = await syncService.client.auth.signInWithPassword({email, password}); if(error) throw error; },
     async register({name, email, password}){
+        syncService.newAccountPending = true;
+        localStorage.setItem("fintrack_show_welcome", "1");
         const {data, error} = await syncService.client.auth.signUp({email, password, options:{data:{name}}});
-        if(error) throw error;
+        if(error){ syncService.newAccountPending = false; localStorage.removeItem("fintrack_show_welcome"); throw error; }
         return data;
     },
     async resetPassword(email){
@@ -99,6 +138,16 @@ const authService = {
         if(error) throw error;
     }
 };
+
+function showWelcomeTour(){
+    if(document.getElementById("welcome-tour")) return;
+    const tour = document.createElement("div");
+    tour.id = "welcome-tour";
+    tour.className = "welcome-tour";
+    tour.innerHTML = `<section><i class="fa-solid fa-sparkles"></i><p>BIENVENIDO A FINTRACK</p><h2>Tu dinero, más claro desde hoy.</h2><div class="welcome-steps"><span><b>1</b> Registra ingresos, gastos, ahorros o préstamos.</span><span><b>2</b> Consulta estadísticas, dinero disponible y lo que te deben.</span><span><b>3</b> Añade objetivos y, si quieres, un vehículo.</span></div><button class="primary-btn" type="button">Comenzar a organizarme <i class="fa-solid fa-arrow-right"></i></button></section>`;
+    tour.querySelector("button").addEventListener("click", () => tour.remove());
+    document.body.appendChild(tour);
+}
 
 function initAuthModal(){
     const modal = document.getElementById("auth-modal"), form = document.getElementById("auth-form");
@@ -123,12 +172,16 @@ function initAuthModal(){
         feedback.textContent = "";
     };
     document.getElementById("open-auth-modal").addEventListener("click", () => {
-        if(syncService.user) return;
+        if(syncService.user){ document.getElementById("account-menu")?.classList.toggle("hidden"); return; }
         form.reset(); isRegistering = false; isRecovering = false; render(); modal.classList.add("active"); document.getElementById("auth-email").focus();
     });
     document.getElementById("close-auth-modal").addEventListener("click", close);
     document.getElementById("cancel-auth").addEventListener("click", close);
-    document.getElementById("account-signout")?.addEventListener("click", () => syncService.client?.auth.signOut());
+    document.getElementById("account-signout")?.addEventListener("click", () => syncService.signOut());
+    document.getElementById("avatar-signout")?.addEventListener("click", () => syncService.signOut());
+    document.addEventListener("click", event => {
+        if(!event.target.closest("#open-auth-modal") && !event.target.closest("#account-menu")) document.getElementById("account-menu")?.classList.add("hidden");
+    });
     toggle.addEventListener("click", () => { isRegistering = !isRegistering; render(); });
     document.addEventListener("fintrack-password-recovery", () => {
         isRecovering = true; isRegistering = false; form.reset(); render(); modal.classList.add("active");

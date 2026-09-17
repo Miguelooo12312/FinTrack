@@ -151,4 +151,13 @@ function initSettings(){
     document.getElementById("local-session-info").addEventListener("click", () => {
         document.getElementById("open-auth-modal").click();
     });
+    document.getElementById("settings-add-vehicle")?.addEventListener("click", () => openAddVehicleModal());
+    updateVehicleAccess();
+}
+
+function updateVehicleAccess(){
+    const count = (finTrack.vehiculos || []).length;
+    document.getElementById("nav-moto")?.classList.toggle("hidden", count === 0);
+    const status = document.getElementById("vehicle-settings-status");
+    if(status) status.textContent = count ? `${count} vehículo${count === 1 ? "" : "s"} agregado${count === 1 ? "" : "s"}. Puedes gestionarlos desde la sección Vehículos.` : "No tienes vehículos agregados. Esta sección permanecerá oculta hasta que agregues uno.";
 }

@@ -222,23 +222,67 @@ function initDashboardShortcuts(){
 /* Saldo acumulado por medio. Un ahorro sale del medio elegido y queda
    representado en la meta, por lo que no se suma como dinero disponible. */
 function getMoneyLocations(){
-    return finTrack.movimientos.reduce((totals, movement) => {
+    const totals = finTrack.movimientos.reduce((totals, movement) => {
         if(!["efectivo", "digital"].includes(movement.medio)){
             totals.sinClasificar++;
             return totals;
         }
-        const change = movement.tipo === "ingreso" ? movement.monto : -movement.monto;
+        const change = ["ingreso", "recuperacion"].includes(movement.tipo) ? movement.monto : -movement.monto;
         totals[movement.medio] += change;
         return totals;
     }, { efectivo:0, digital:0, sinClasificar:0 });
+    (finTrack.transferencias || []).forEach(item => { totals.digital -= item.monto; totals.efectivo += item.monto; });
+    return totals;
+}
+
+function getOutstandingLoans(){ return finTrack.movimientos.filter(item => item.tipo === "prestamo" && !item.pagado); }
+
+function confirmLoanRepayment(id){
+    const loan = finTrack.movimientos.find(item => item.id === id && item.tipo === "prestamo" && !item.pagado);
+    if(!loan) return;
+    if(!confirm(`¿${loan.persona || "Esta persona"} ya te pagó ${formatMoney(loan.monto)}?`)) return;
+    const method = confirm("¿Recibiste el pago en una plataforma digital?\nAceptar: digital · Cancelar: efectivo") ? "digital" : "efectivo";
+    loan.pagado = true;
+    finTrack.movimientos.push({id:Date.now(), tipo:"recuperacion", monto:loan.monto, categoria:"Pago de préstamo", descripcion:`Pago recibido de ${loan.persona || "préstamo"}`, medio:method, fecha:new Date().toISOString().slice(0,10), prestamoId:loan.id});
+    recalculateFinances(); saveData(finTrack); updateDashboard(); renderHistory(); renderAnalytics?.();
 }
 
 function updateMoneyLocations(){
     const totals = getMoneyLocations();
     document.getElementById("cash-balance").textContent = formatMoney(totals.efectivo);
     document.getElementById("digital-balance").textContent = formatMoney(totals.digital);
+    const lent = getOutstandingLoans().reduce((sum, loan) => sum + loan.monto, 0);
+    document.getElementById("lent-balance").textContent = formatMoney(lent);
     const message = document.getElementById("funds-message");
     message.textContent = totals.sinClasificar
         ? `${totals.sinClasificar} movimiento${totals.sinClasificar === 1 ? "" : "s"} sin clasificar. Edítalo${totals.sinClasificar === 1 ? "" : "s"} desde el historial para tener el total exacto.`
         : "Todos tus movimientos están clasificados por medio.";
+}
+
+function openWithdrawMoney(){
+    const available = getMoneyLocations().digital;
+    const raw = prompt(`¿Cuánto deseas retirar a efectivo? Disponible en plataformas: ${formatMoney(available)}`, "");
+    if(raw === null) return;
+    const monto = Number(raw.replace(/[^0-9]/g, ""));
+    if(!monto || monto <= 0 || monto > available) return alert("Escribe un valor válido que no supere tu dinero digital disponible.");
+    finTrack.transferencias.push({id:crypto.randomUUID(), monto, fecha:new Date().toISOString().slice(0,10)});
+    saveData(finTrack); updateMoneyLocations();
+}
+
+function initMoneyActions(){
+    document.getElementById("withdraw-money")?.addEventListener("click", openWithdrawMoney);
+    document.getElementById("lend-money")?.addEventListener("click", () => {
+        openModal();
+        document.querySelector('[data-type="prestamo"]')?.click();
+    });
+}
+
+function checkDueLoans(){
+    const today = new Date().toISOString().slice(0,10);
+    getOutstandingLoans().filter(loan => loan.fechaLimite === today).forEach(loan => {
+        const key = `fintrack-loan-alert-${loan.id}-${today}`;
+        if(sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, "shown");
+        window.setTimeout(() => confirmLoanRepayment(loan.id), 250);
+    });
 }

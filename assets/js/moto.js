@@ -131,6 +131,13 @@ function getMaintenanceColor(tipo){
 
 function renderMoto(){
 
+    if(!(finTrack.vehiculos || []).length){
+        const hero = document.getElementById("moto-hero");
+        if(hero) hero.innerHTML = `<section class="vehicle-empty"><i class="fa-solid fa-car-side"></i><h2>Agrega tu vehículo</h2><p>Configura un vehículo para recibir recordatorios, historial y análisis de mantenimiento.</p><button class="primary-btn" onclick="openAddVehicleModal()"><i class="fa-solid fa-plus"></i> Agregar vehículo</button></section>`;
+        ["moto-reminders","moto-stats","moto-history"].forEach(id => { const element=document.getElementById(id); if(element) element.innerHTML=""; });
+        return;
+    }
+
     renderMotoHero();
 
     renderMotoReminders();
@@ -471,14 +478,6 @@ function selectVehicle(id){
 
 function deleteVehicle(id){
 
-    if(finTrack.vehiculos.length === 1){
-
-        alert("Debes conservar al menos un vehículo.");
-
-        return;
-
-    }
-
     const vehicle = finTrack.vehiculos.find(item => item.id === id);
 
     if(!vehicle) return;
@@ -497,13 +496,14 @@ function deleteVehicle(id){
 
         const nextVehicle = finTrack.vehiculos[0];
 
-        finTrack.activeVehicleId = nextVehicle.id;
-        finTrack.moto = nextVehicle;
+        finTrack.activeVehicleId = nextVehicle?.id || null;
+        finTrack.moto = nextVehicle || null;
 
     }
 
     saveData(finTrack);
     renderMoto();
+    updateVehicleAccess?.();
 
 }
 
@@ -747,6 +747,7 @@ function saveNewVehicle(event){
     saveData(finTrack);
     closeAddVehicleModal();
     renderMoto();
+    updateVehicleAccess?.();
 
 }
 

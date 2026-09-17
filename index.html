@@ -225,6 +225,10 @@
             <i class="fa-solid fa-user"></i>
 
         </button>
+        <div id="account-menu" class="account-menu hidden" role="menu">
+            <span id="account-menu-email">Tu cuenta</span>
+            <button id="avatar-signout" type="button"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+        </div>
 
     </div>
 
@@ -397,6 +401,7 @@ class="page">
         <div class="funds-breakdown">
             <div><span><i class="fa-solid fa-wallet"></i> Efectivo</span><strong id="cash-balance">$0</strong></div>
             <div><span><i class="fa-solid fa-mobile-screen-button"></i> Plataformas digitales</span><strong id="digital-balance">$0</strong></div>
+            <div><span><i class="fa-solid fa-hand-holding-dollar"></i> Dinero prestado</span><strong id="lent-balance">$0</strong></div>
         </div>
 
         <p id="funds-message">Clasifica tus movimientos para conocer dónde está tu dinero.</p>
@@ -432,6 +437,11 @@ class="page">
 
         <div id="dashboard-insights" class="dashboard-insights">
 
+</div>
+
+<div id="money-actions" class="money-actions" aria-label="Acciones rápidas de dinero">
+    <button id="withdraw-money" type="button"><i class="fa-solid fa-money-bill-transfer"></i><span>Retirar</span></button>
+    <button id="lend-money" type="button"><i class="fa-solid fa-hand-holding-dollar"></i><span>Prestar</span></button>
 </div>
     </article>
 </div>
@@ -651,6 +661,7 @@ class="page hidden">
         <section class="settings-card settings-card-wide"><div class="settings-card-title"><i class="fa-solid fa-tags"></i><div><h3>Categorías personalizadas</h3><p>Agrega o elimina categorías para ingresos y gastos. Los ahorros siguen conectados a objetivos.</p></div></div><div class="category-manager"><div><h4>Ingresos</h4><div id="income-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="ingresos"><input placeholder="Nueva categoría de ingreso"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div><div><h4>Gastos</h4><div id="expense-category-tags" class="category-tags"></div><form class="category-add-form" data-category-type="gastos"><input placeholder="Nueva categoría de gasto"><button type="submit"><i class="fa-solid fa-plus"></i></button></form></div></div></section>
         <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-cloud-arrow-up"></i><div><h3>Migrar datos anteriores</h3><p>Conserva tus movimientos locales: intégralos una sola vez a la cuenta que tienes iniciada.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Descargar copia (.json)</button><label class="secondary-btn upload-data"><i class="fa-solid fa-file-import"></i> Migrar archivo a mi cuenta<input id="import-data" type="file" accept="application/json,.json"></label></div><p class="backup-help">La migración combina los movimientos y objetivos del archivo con tu cuenta, evita duplicados y los sincroniza en la nube. Debes iniciar sesión antes de usarla.</p><p id="backup-status" class="backup-status" aria-live="polite"></p></section>
         <section class="settings-card account-card"><div class="settings-card-title"><i class="fa-solid fa-user-shield"></i><div><h3>Tu cuenta</h3><p id="account-status-text">Estás usando FinTrack en modo local. Inicia sesión cuando quieras sincronizar tus datos.</p></div></div><span id="account-mode-badge" class="local-mode-badge"><i class="fa-solid fa-hard-drive"></i> Modo local activo</span><button id="local-session-info" class="secondary-btn account-login-btn"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión o crear cuenta</button><button id="account-signout" class="secondary-btn account-login-btn hidden" type="button"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button></section>
+        <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-car-side"></i><div><h3>Vehículos</h3><p>Agrega un vehículo solo si quieres gestionar mantenimientos y recordatorios.</p></div></div><button id="settings-add-vehicle" class="secondary-btn"><i class="fa-solid fa-plus"></i> Agregar vehículo</button><p id="vehicle-settings-status" class="backup-help"></p></section>
         <section class="settings-card support-card"><i class="fa-solid fa-heart"></i><h3>Apoya al creador</h3><p>El QR de pago requiere el enlace o número de cobro que quieras usar. Cuando lo tengas, lo integramos aquí.</p></section>
     </div>
     </section>
@@ -683,7 +694,7 @@ class="page hidden">
         <section class="auth-panel">
             <button id="close-auth-modal" class="auth-close" type="button" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
             <div class="auth-panel-content">
-                <div class="auth-panel-heading"><p>BIENVENIDO A FINTRACK</p><h2 id="auth-title">Iniciar sesión</h2><span id="auth-description">Accede para sincronizar tus datos cuando conectemos la base de datos.</span></div>
+                <div class="auth-panel-heading"><p>BIENVENIDO A FINTRACK</p><h2 id="auth-title">Iniciar sesión</h2><span id="auth-description">Accede a tus datos de forma segura desde cualquier dispositivo.</span></div>
                 <form id="auth-form">
                     <div id="auth-name-group" class="form-group hidden"><label for="auth-name">Nombre</label><input id="auth-name" type="text" autocomplete="name" maxlength="40" placeholder="Cómo quieres que te llamemos"></div>
                     <div class="form-group"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
@@ -760,6 +771,8 @@ class="page hidden">
             <span>Ahorro</span>
 
         </button>
+
+        <button class="movement-option" data-type="prestamo"><i class="fa-solid fa-hand-holding-dollar"></i><span>Préstamo</span></button>
 
     </div>
 
@@ -843,6 +856,11 @@ class="page hidden">
     </select>
 
 </div>
+
+    <div id="loan-details-group" class="hidden">
+        <div class="form-group"><label>¿A quién prestaste?</label><input id="loan-person" type="text" placeholder="Ej: Juan"></div>
+        <div class="form-group"><label>Fecha límite de pago</label><input id="loan-due-date" type="date"></div>
+    </div>
 
     <!--========================-->
     <!-- DESCRIPCIÓN -->

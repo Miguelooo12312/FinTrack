@@ -127,6 +127,7 @@ function updateMovementTheme() {
     const title = document.getElementById("modal-title");
     const saveButton = document.getElementById("save-movement");
     const goalGroup = document.getElementById("goal-select-group");
+    const loanGroup = document.getElementById("loan-details-group");
     const methodLabel = document.getElementById("movement-method-label");
 
     switch (movementType) {
@@ -154,6 +155,13 @@ function updateMovementTheme() {
             saveButton.classList.add("saving-btn");
             methodLabel.textContent = "¿Cómo ahorraste este dinero?";
             break;
+        case "prestamo":
+            title.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> Nuevo préstamo`;
+            saveButton.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Registrar préstamo`;
+            saveButton.classList.remove("income-btn", "saving-btn");
+            saveButton.classList.add("expense-btn");
+            methodLabel.textContent = "¿De dónde entregaste el dinero?";
+            break;
     }
 
     const categoryGroup = document
@@ -166,8 +174,9 @@ function updateMovementTheme() {
         loadGoalsSelect();
     } else {
         goalGroup.classList.add("hidden");
-        categoryGroup.classList.remove("hidden");
+        categoryGroup.classList.toggle("hidden", movementType === "prestamo");
     }
+    loanGroup?.classList.toggle("hidden", movementType !== "prestamo");
 
 }
 
@@ -251,6 +260,8 @@ function clearMovementForm(){
         .click();
 
         document.getElementById("movement-goal").value="";
+        document.getElementById("loan-person").value="";
+        document.getElementById("loan-due-date").value="";
 
 }
 
@@ -280,7 +291,6 @@ function saveMovement() {
         return;
 
     }
-
     if(!method){
         alert("Indica si este movimiento fue en efectivo o por una plataforma digital.");
         return;
@@ -301,6 +311,13 @@ function saveMovement() {
     return;
 
 }
+
+    const loanPerson = document.getElementById("loan-person").value.trim();
+    const loanDueDate = document.getElementById("loan-due-date").value;
+    if(movementType === "prestamo" && (!loanPerson || !loanDueDate)){
+        alert("Indica a quién prestaste y la fecha límite de pago.");
+        return;
+    }
 /*============================
     CATEGORÍA FINAL
 ============================*/
@@ -317,6 +334,8 @@ if(movementType === "ahorro"){
 
     categoriaFinal = goal.nombre;
 
+}else if(movementType === "prestamo"){
+    categoriaFinal = "Préstamo";
 }else{
 
     categoriaFinal = document
@@ -343,7 +362,11 @@ if(movementType === "ahorro"){
 
     medio: method,
 
-    fecha: document.getElementById("movement-date").value
+    fecha: document.getElementById("movement-date").value,
+
+    persona: movementType === "prestamo" ? loanPerson : "",
+    fechaLimite: movementType === "prestamo" ? loanDueDate : "",
+    pagado: false
 
 };
 

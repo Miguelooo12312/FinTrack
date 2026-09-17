@@ -1107,7 +1107,7 @@ SELECTOR
 
     display:grid;
 
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
 
     gap:14px;
 
@@ -4304,6 +4304,15 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{
     z-index: 20;
 
 }
+
+.menu li.hidden{display:none!important}
+
+@media(max-width:560px){.movement-selector{grid-template-columns:repeat(2,1fr);gap:9px}.movement-option{padding:13px;border-radius:14px}.movement-option i{font-size:23px}.movement-option span{font-size:13px}.history-card{grid-template-columns:50px 1fr auto;gap:10px;padding:14px}.history-icon{width:43px;height:43px;font-size:17px}.history-actions{grid-column:2 / -1;justify-content:flex-end}.history-value{font-size:15px}}
+
+.topbar-right{position:relative}.account-menu{position:absolute;z-index:30;right:0;top:58px;min-width:220px;padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:#1c1c1f;box-shadow:0 18px 35px rgba(0,0,0,.35)}.account-menu span{display:block;padding:7px 9px 10px;color:#aaa;font-size:11px;overflow:hidden;text-overflow:ellipsis}.account-menu button{width:100%;border:0;border-radius:10px;padding:11px;background:rgba(229,9,20,.13);color:#fff;font:600 13px "Poppins",sans-serif;text-align:left;cursor:pointer}.account-menu button:hover{background:var(--primary)}.account-menu i{margin-right:8px;color:var(--primary-hover)}
+.money-actions{position:fixed;z-index:20;right:24px;bottom:24px;display:flex;gap:10px}.money-actions button{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:13px 16px;background:#1b1b1e;color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.32);cursor:pointer;font:600 13px "Poppins",sans-serif}.money-actions button:hover{transform:translateY(-2px);border-color:var(--primary);background:rgba(255,255,255,.08)}.money-actions i{display:grid;place-items:center;width:25px;height:25px;border-radius:9px;background:var(--primary);color:#fff}.vehicle-empty{padding:64px 25px;text-align:center;border:1px dashed rgba(255,255,255,.2);border-radius:22px;background:rgba(255,255,255,.025)}.vehicle-empty>i{display:block;color:var(--primary);font-size:38px;margin-bottom:15px}.vehicle-empty p{max-width:440px;margin:10px auto 22px;color:#aaa}.loan-paid-btn{border:0;border-radius:10px;background:rgba(72,201,122,.15);color:#72e7ad;width:35px;height:35px;cursor:pointer}
+.welcome-tour{position:fixed;z-index:1000;inset:0;display:grid;place-items:center;padding:20px;background:rgba(5,6,10,.84);backdrop-filter:blur(9px);animation:fadeIn .35s ease}.welcome-tour section{width:min(100%,560px);padding:42px;border:1px solid rgba(255,255,255,.12);border-radius:28px;background:linear-gradient(145deg,#202027,#101116);box-shadow:0 25px 70px rgba(0,0,0,.5);text-align:center}.welcome-tour section>i{display:grid;place-items:center;width:58px;height:58px;margin:auto;border-radius:18px;background:var(--primary);font-size:24px}.welcome-tour p{margin:20px 0 8px;color:var(--primary-hover);font-size:11px;font-weight:700;letter-spacing:1.6px}.welcome-tour h2{font-size:30px}.welcome-steps{display:grid;gap:10px;margin:26px 0;text-align:left}.welcome-steps span{padding:13px;border-radius:13px;background:rgba(255,255,255,.05);color:#d8d8d8;font-size:13px}.welcome-steps b{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:7px;border-radius:50%;background:var(--primary);font-size:11px}
+@media(max-width:560px){.money-actions{right:14px;bottom:14px;gap:7px}.money-actions button{padding:11px 12px;border-radius:14px;font-size:12px}.money-actions i{width:23px;height:23px}}
 
 .goal-main-card { position:relative; overflow:hidden; background:linear-gradient(135deg,rgba(229,9,20,.16),#171717 54%); }
 .goal-main-card::after { content:""; position:absolute; width:230px; height:230px; right:-90px; top:-110px; border:30px solid rgba(255,255,255,.04); border-radius:50%; pointer-events:none; }

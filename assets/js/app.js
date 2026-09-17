@@ -20,6 +20,7 @@ initMovementModal();
 initNavigation();
 
 initDashboardShortcuts();
+initMoneyActions();
 
 updateQuickAction("dashboard");
     
