@@ -314,6 +314,7 @@ function migrateData(data){
     data.categorias.ingresos ||= structuredClone(defaultData.categorias.ingresos);
     data.categorias.gastos ||= structuredClone(defaultData.categorias.gastos);
     data.transferencias = Array.isArray(data.transferencias) ? data.transferencias : [];
+    data.deudas = Array.isArray(data.deudas) ? data.deudas : [];
 
     return data;
 

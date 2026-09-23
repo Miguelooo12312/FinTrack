@@ -157,6 +157,11 @@ function clearGoalForm(){
     document.getElementById("goal-date").value="";
 
     document.getElementById("goal-main").checked=false;
+    document.getElementById("goal-debt-enabled").checked=false;
+    document.getElementById("goal-debt-person").value="";
+    document.getElementById("goal-debt-amount").value="";
+    document.getElementById("goal-debt-installments").value="1";
+    document.getElementById("goal-debt-fields").classList.add("hidden");
 
 }
 
@@ -188,6 +193,11 @@ function saveGoal(){
         .getElementById("goal-main")
         .checked;
 
+    const isDebt = document.getElementById("goal-debt-enabled").checked;
+    const debtPerson = document.getElementById("goal-debt-person").value.trim();
+    const debtAmount = getGoalMoneyValue("goal-debt-amount");
+    const debtInstallments = Number(document.getElementById("goal-debt-installments").value) || 0;
+
     /*======================
         VALIDACIONES
     ======================*/
@@ -200,12 +210,17 @@ function saveGoal(){
 
     }
 
-    if(objetivo<=0){
+    if(!isDebt && objetivo<=0){
 
         alert("El valor objetivo debe ser mayor que cero.");
 
         return;
 
+    }
+
+    if(isDebt && (!debtPerson || debtAmount <= 0 || debtInstallments < 1)){
+        alert("Completa a quién le pediste, el monto y el número de cuotas.");
+        return;
     }
 
     /*======================
@@ -287,7 +302,7 @@ function saveGoal(){
 
             icono,
 
-            objetivo,
+            objetivo:isDebt ? debtAmount : objetivo,
 
             ahorrado,
 
@@ -297,9 +312,16 @@ function saveGoal(){
 
             principal,
 
-            completado:false
+            completado:false,
+            deudaId:isDebt ? crypto.randomUUID() : null
 
         });
+
+        if(isDebt){
+            const goal = finTrack.objetivos.at(-1);
+            finTrack.deudas ||= [];
+            finTrack.deudas.push({id:goal.deudaId, nombre:goal.nombre, persona:debtPerson, monto:debtAmount, cuotas:debtInstallments, restante:debtAmount, objetivoId:goal.id, fechaCreacion:new Date().toISOString()});
+        }
 
     }
 
@@ -351,6 +373,14 @@ if(!mainGoal){
 
     return;
 
+}
+
+function openDebtGoalModal(){
+    clearGoalForm();
+    document.getElementById("goal-debt-enabled").checked = true;
+    document.getElementById("goal-debt-fields").classList.remove("hidden");
+    document.getElementById("goal-name").placeholder = "Ej: Pagar préstamo personal";
+    openGoalModal();
 }
 
 if(motivation){

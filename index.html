@@ -439,14 +439,16 @@ class="page">
 
 </div>
 
-<div id="money-actions" class="money-actions" aria-label="Acciones rápidas de dinero">
-    <button id="withdraw-money" type="button"><i class="fa-solid fa-money-bill-transfer"></i><span>Retirar</span></button>
-    <button id="lend-money" type="button"><i class="fa-solid fa-hand-holding-dollar"></i><span>Prestar</span></button>
-</div>
     </article>
 </div>
 
 </section>
+
+<!-- Acciones rápidas: se mantienen fuera de las tarjetas y fijas en pantalla. -->
+<div id="money-actions" class="money-actions" aria-label="Acciones rápidas de dinero">
+    <button id="withdraw-money" type="button"><i class="fa-solid fa-money-bill-transfer"></i><span>Retirar</span></button>
+    <button id="lend-money" type="button"><i class="fa-solid fa-hand-holding-dollar"></i><span>Prestar</span></button>
+</div>
 
 <!--==================================================-->
 <!-- HISTORIAL -->
@@ -1015,6 +1017,17 @@ class="page hidden">
 
                 </label>
 
+            </div>
+
+            <div class="goal-debt-toggle">
+                <label><input id="goal-debt-enabled" type="checkbox"> Registrar una deuda adquirida</label>
+                <small>Para dejar registrado un préstamo que tú solicitaste y planear sus cuotas.</small>
+            </div>
+
+            <div id="goal-debt-fields" class="hidden">
+                <div class="form-group"><label>¿A quién le pediste prestado?</label><input id="goal-debt-person" type="text" placeholder="Ej: Banco o familiar"></div>
+                <div class="form-group"><label>Monto solicitado</label><input id="goal-debt-amount" type="text" inputmode="numeric" placeholder="$0"></div>
+                <div class="form-group"><label>Número de cuotas</label><input id="goal-debt-installments" type="number" min="1" value="1"></div>
             </div>
 
             <!-- Botones -->
