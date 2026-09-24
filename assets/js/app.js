@@ -7,6 +7,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+const moneyActions=document.getElementById("money-actions");
+if(moneyActions) document.body.appendChild(moneyActions);
+
 recalculateFinances();
 
 updateHeader();
@@ -21,6 +24,8 @@ initNavigation();
 
 initDashboardShortcuts();
 initMoneyActions();
+initLoans();
+renderLoans();
 
 updateQuickAction("dashboard");
     

@@ -260,8 +260,6 @@ function clearMovementForm(){
         .click();
 
         document.getElementById("movement-goal").value="";
-        document.getElementById("loan-person").value="";
-        document.getElementById("loan-due-date").value="";
 
 }
 
@@ -312,10 +310,11 @@ function saveMovement() {
 
 }
 
-    const loanPerson = document.getElementById("loan-person").value.trim();
-    const loanDueDate = document.getElementById("loan-due-date").value;
-    if(movementType === "prestamo" && (!loanPerson || !loanDueDate)){
-        alert("Indica a quién prestaste y la fecha límite de pago.");
+    const loanPerson = document.getElementById("loan-person")?.value.trim() || "";
+    const loanDueDate = document.getElementById("loan-due-date")?.value || "";
+    const loanInstallments = Number(document.getElementById("loan-installments")?.value) || 0;
+    if(movementType === "prestamo" && (!loanPerson || !loanDueDate || loanInstallments < 1)){
+        alert("Indica a quién prestaste, el número de cuotas y la fecha límite de pago.");
         return;
     }
 /*============================
@@ -366,6 +365,8 @@ if(movementType === "ahorro"){
 
     persona: movementType === "prestamo" ? loanPerson : "",
     fechaLimite: movementType === "prestamo" ? loanDueDate : "",
+    cuotas: movementType === "prestamo" ? loanInstallments : 1,
+    cuotaPagada: 0,
     pagado: false
 
 };
@@ -425,9 +426,13 @@ if(movementType === "ahorro"){
     );
 
     if(goal){
-
+        const wasComplete=goal.ahorrado>=goal.objetivo;
         goal.ahorrado += amount;
-
+        if(goal.deudaId){
+            const debt=(finTrack.deudas||[]).find(item=>item.id===goal.deudaId);
+            if(debt) debt.restante=Math.max(0,debt.restante-amount);
+        }
+        if(!wasComplete && goal.ahorrado>=goal.objetivo) window.setTimeout(()=>showCelebration(goal.deudaId?"¡Préstamo pagado!":"¡Objetivo cumplido!",goal.deudaId?`Terminaste de pagar ${goal.nombre}. ¡Gran logro financiero!`:`Completaste ${goal.nombre}. Todo ese esfuerzo valió la pena.`),350);
     }
 
 }

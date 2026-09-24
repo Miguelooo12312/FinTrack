@@ -93,6 +93,14 @@
 
     </li>
 
+    <li id="nav-historial" data-page="historial">
+
+        <i class="fa-solid fa-clock-rotate-left"></i>
+
+        <span>Historial</span>
+
+    </li>
+
    
 
     <li id="nav-objetivos" data-page="objetivos">
@@ -103,19 +111,13 @@
 
     </li>
 
+    <li id="nav-prestamos" data-page="prestamos"><i class="fa-solid fa-hand-holding-dollar"></i><span>Préstamos</span></li>
+
     <li id="nav-moto" data-page="moto">
 
         <i class="fa-solid fa-motorcycle"></i>
 
         <span>Vehiculos</span>
-
-    </li>
-
-    <li id="nav-historial" data-page="historial">
-
-        <i class="fa-solid fa-clock-rotate-left"></i>
-
-        <span>Historial</span>
 
     </li>
 
@@ -587,6 +589,12 @@ class="page hidden">
 
 </section>
 
+<section id="loans-page" class="page hidden">
+    <div class="page-header loans-heading"><div><span class="section-eyebrow">CRÉDITOS Y CUOTAS</span><h2>Préstamos</h2><p>Controla lo que prestas y lo que debes con fechas y pagos claros.</p></div><div class="loan-theme-picker"><span>Color de enfoque</span><div class="theme-options"><button class="theme-option" data-theme="red" aria-label="Rojo"><i></i></button><button class="theme-option" data-theme="pink" aria-label="Rosa"><i></i></button><button class="theme-option" data-theme="purple" aria-label="Morado"><i></i></button><button class="theme-option" data-theme="blue" aria-label="Azul"><i></i></button></div></div></div>
+    <div id="loan-kpis" class="loan-kpis"></div>
+    <div class="loan-workspace"><section class="loan-form-panel"><div class="loan-mode-tabs"><button type="button" class="active" data-loan-mode="lend"><i class="fa-solid fa-arrow-up-right-from-square"></i> Prestar dinero</button><button type="button" data-loan-mode="borrow"><i class="fa-solid fa-arrow-down-to-bracket"></i> Pedir prestado</button></div><form id="loan-form"><div class="form-group"><label id="loan-person-label" for="loan-party">¿A quién prestaste?</label><input id="loan-party" required placeholder="Persona o entidad"></div><div class="form-group"><label for="loan-name">Concepto (opcional)</label><input id="loan-name" placeholder="Ej: Préstamo personal"></div><div class="form-group"><label for="loan-total">Monto total</label><input id="loan-total" inputmode="numeric" required placeholder="$0"></div><div class="form-group"><label id="loan-medium-label" for="loan-medium">¿De dónde salió el dinero?</label><select id="loan-medium" required><option value="digital">Billetera digital</option><option value="efectivo">Efectivo</option></select></div><div class="loan-form-row"><div class="form-group"><label for="loan-count">Número de cuotas</label><input id="loan-count" type="number" min="1" value="1" required></div><div class="form-group"><label for="loan-deadline">Fecha límite</label><input id="loan-deadline" type="date" required></div></div><div id="loan-installment-preview" class="loan-installment-preview"><i class="fa-solid fa-calendar-check"></i><span>Cuota estimada <strong>$0</strong></span></div><button class="primary-btn loan-submit" type="submit"><i class="fa-solid fa-plus"></i> Registrar préstamo</button></form></section><section class="loan-list-panel"><div class="loan-list-heading"><div><span class="section-eyebrow">SEGUIMIENTO</span><h3>Tus préstamos y tarjetas</h3></div><div class="loan-filters"><button class="active" data-loan-filter="all">Todos</button><button data-loan-filter="lend">Prestados</button><button data-loan-filter="borrow">Adquiridos</button></div></div><div id="loan-cards" class="loan-cards"></div></section></div>
+</section>
+
 <!--==================================================-->
 <!-- MOTO-->
 <!--==================================================-->
@@ -664,7 +672,7 @@ class="page hidden">
         <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-cloud-arrow-up"></i><div><h3>Migrar datos anteriores</h3><p>Conserva tus movimientos locales: intégralos una sola vez a la cuenta que tienes iniciada.</p></div></div><div class="settings-actions"><button id="export-data" class="secondary-btn"><i class="fa-solid fa-download"></i> Descargar copia (.json)</button><label class="secondary-btn upload-data"><i class="fa-solid fa-file-import"></i> Migrar archivo a mi cuenta<input id="import-data" type="file" accept="application/json,.json"></label></div><p class="backup-help">La migración combina los movimientos y objetivos del archivo con tu cuenta, evita duplicados y los sincroniza en la nube. Debes iniciar sesión antes de usarla.</p><p id="backup-status" class="backup-status" aria-live="polite"></p></section>
         <section class="settings-card account-card"><div class="settings-card-title"><i class="fa-solid fa-user-shield"></i><div><h3>Tu cuenta</h3><p id="account-status-text">Estás usando FinTrack en modo local. Inicia sesión cuando quieras sincronizar tus datos.</p></div></div><span id="account-mode-badge" class="local-mode-badge"><i class="fa-solid fa-hard-drive"></i> Modo local activo</span><button id="local-session-info" class="secondary-btn account-login-btn"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión o crear cuenta</button><button id="account-signout" class="secondary-btn account-login-btn hidden" type="button"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button></section>
         <section class="settings-card"><div class="settings-card-title"><i class="fa-solid fa-car-side"></i><div><h3>Vehículos</h3><p>Agrega un vehículo solo si quieres gestionar mantenimientos y recordatorios.</p></div></div><button id="settings-add-vehicle" class="secondary-btn"><i class="fa-solid fa-plus"></i> Agregar vehículo</button><p id="vehicle-settings-status" class="backup-help"></p></section>
-        <section class="settings-card support-card"><i class="fa-solid fa-heart"></i><h3>Apoya al creador</h3><p>El QR de pago requiere el enlace o número de cobro que quieras usar. Cuando lo tengas, lo integramos aquí.</p></section>
+        <section class="settings-card support-card"><i class="fa-solid fa-heart"></i><h3>Apoya al creador</h3><p>Gracias por apoyar el desarrollo de FinTrack. Escanea el código QR o guárdalo en tu dispositivo.</p><img class="creator-qr" src="assets/images/creator-qr.png" alt="Código QR para apoyar al creador"><a class="secondary-btn" href="assets/images/creator-qr.png" download="fintrack-qr-creador.png"><i class="fa-solid fa-download"></i> Descargar QR</a></section>
     </div>
     </section>
 
@@ -774,7 +782,6 @@ class="page hidden">
 
         </button>
 
-        <button class="movement-option" data-type="prestamo"><i class="fa-solid fa-hand-holding-dollar"></i><span>Préstamo</span></button>
 
     </div>
 
@@ -859,11 +866,6 @@ class="page hidden">
 
 </div>
 
-    <div id="loan-details-group" class="hidden">
-        <div class="form-group"><label>¿A quién prestaste?</label><input id="loan-person" type="text" placeholder="Ej: Juan"></div>
-        <div class="form-group"><label>Fecha límite de pago</label><input id="loan-due-date" type="date"></div>
-    </div>
-
     <!--========================-->
     <!-- DESCRIPCIÓN -->
     <!--========================-->
@@ -921,6 +923,14 @@ class="page hidden">
 <!--==================================================-->
 <!-- MODAL NUEVO OBJETIVO -->
 <!--==================================================-->
+
+<div id="withdraw-modal" class="modal"><div class="modal-content withdraw-modal-content"><div class="modal-header"><div><span class="maintenance-subtitle">TRANSFERENCIA</span><h2><i class="fa-solid fa-money-bill-transfer"></i> Retirar dinero</h2></div><button id="close-withdraw-modal" class="modal-close" type="button" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body"><p class="withdraw-available">Disponible en plataformas digitales: <strong id="withdraw-available-amount">$0</strong></p><div class="form-group"><label for="withdraw-amount">¿Cuánto vas a retirar a efectivo?</label><input id="withdraw-amount" type="text" inputmode="numeric" placeholder="$0"></div><div class="goal-modal-actions"><button id="cancel-withdraw" class="secondary-btn" type="button">Cancelar</button><button id="confirm-withdraw" class="primary-btn" type="button"><i class="fa-solid fa-arrow-right-arrow-left"></i> Confirmar retiro</button></div></div></div></div>
+
+<div id="celebration-modal" class="celebration-overlay hidden" role="dialog" aria-modal="true"><div class="celebration-card"><button type="button" class="celebration-close" aria-label="Cerrar">×</button><div class="celebration-confetti">🎉 ✨ 🎊</div><div class="celebration-icon">🏆</div><p>¡LO LOGRASTE!</p><h2 id="celebration-title">Meta cumplida</h2><span id="celebration-message">Cada paso que diste te trajo hasta aquí.</span><button type="button" class="primary-btn celebration-done">¡Celebrar!</button></div></div>
+
+<div id="loan-payment-modal" class="modal"><div class="modal-content loan-dialog-content"><div class="modal-header"><div><span class="maintenance-subtitle">SEGUIMIENTO DE CUOTAS</span><h2 id="loan-payment-title"><i class="fa-solid fa-circle-check"></i> Registrar cuota</h2></div><button type="button" class="modal-close" data-close-loan-payment><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body"><p id="loan-payment-balance" class="withdraw-available"></p><form id="loan-payment-form"><div class="form-group"><label for="loan-payment-amount">Valor de esta cuota</label><input id="loan-payment-amount" inputmode="numeric" required placeholder="$0"></div><div class="form-group"><label for="loan-payment-medium">Medio de dinero</label><select id="loan-payment-medium"><option value="digital">Billetera digital</option><option value="efectivo">Efectivo</option></select></div><div class="goal-modal-actions"><button type="button" class="secondary-btn" data-close-loan-payment>Cancelar</button><button class="primary-btn" type="submit"><i class="fa-solid fa-check"></i> Guardar cuota</button></div></form></div></div></div>
+
+<div id="loan-edit-modal" class="modal"><div class="modal-content loan-dialog-content"><div class="modal-header"><div><span class="maintenance-subtitle">DATOS DEL PRÉSTAMO</span><h2><i class="fa-solid fa-pen-to-square"></i> Modificar préstamo</h2></div><button type="button" class="modal-close" data-close-loan-edit><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body"><form id="loan-edit-form"><div class="form-group"><label for="loan-edit-party">Persona o entidad</label><input id="loan-edit-party" required></div><div class="form-group"><label for="loan-edit-name">Concepto</label><input id="loan-edit-name"></div><div class="form-group"><label for="loan-edit-total">Monto total</label><input id="loan-edit-total" inputmode="numeric" required></div><div class="form-group"><label for="loan-edit-count">Número de cuotas</label><input id="loan-edit-count" type="number" min="1" required></div><div class="form-group"><label for="loan-edit-deadline">Fecha límite</label><input id="loan-edit-deadline" type="date" required></div><div class="form-group"><label for="loan-edit-medium">Medio de dinero</label><select id="loan-edit-medium"><option value="digital">Billetera digital</option><option value="efectivo">Efectivo</option></select></div><div class="goal-modal-actions"><button type="button" class="secondary-btn" data-close-loan-edit>Cancelar</button><button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button></div></form></div></div></div>
 
 <div id="goal-modal" class="modal">
 
@@ -1017,17 +1027,6 @@ class="page hidden">
 
                 </label>
 
-            </div>
-
-            <div class="goal-debt-toggle">
-                <label><input id="goal-debt-enabled" type="checkbox"> Registrar una deuda adquirida</label>
-                <small>Para dejar registrado un préstamo que tú solicitaste y planear sus cuotas.</small>
-            </div>
-
-            <div id="goal-debt-fields" class="hidden">
-                <div class="form-group"><label>¿A quién le pediste prestado?</label><input id="goal-debt-person" type="text" placeholder="Ej: Banco o familiar"></div>
-                <div class="form-group"><label>Monto solicitado</label><input id="goal-debt-amount" type="text" inputmode="numeric" placeholder="$0"></div>
-                <div class="form-group"><label>Número de cuotas</label><input id="goal-debt-installments" type="number" min="1" value="1"></div>
             </div>
 
             <!-- Botones -->
@@ -1404,6 +1403,7 @@ class="page hidden">
 <script src="assets/js/dateUtils.js"></script>
 <script src="assets/js/ui.js"></script>
 <script src="assets/js/dashboard.js"></script>
+<script src="assets/js/loans.js"></script>
 <script src="assets/js/navigation.js"></script>
 <script src="assets/js/movements.js"></script>
 <script src="assets/js/history.js"></script>

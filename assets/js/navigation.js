@@ -43,6 +43,12 @@ function updateQuickAction(page){
 
 break;
 
+case "prestamos":
+    button.style.display="flex";
+    button.innerHTML=`<i class="fa-solid fa-hand-holding-dollar"></i> Nuevo préstamo`;
+    button.onclick=()=>{document.querySelector('[data-loan-mode="lend"]')?.click();document.getElementById("loan-party")?.focus();};
+break;
+
 case "moto":
 
     button.style.display = "flex";
@@ -108,6 +114,8 @@ function initNavigation(){
 
         objetivos:"goals-page",
 
+        prestamos:"loans-page",
+
         historial:"history-page",
 
         moto:"moto-page",
@@ -149,6 +157,8 @@ if(page === "moto"){
 if(page === "estadisticas"){
     renderAnalytics();
 }
+
+if(page === "prestamos") renderLoans();
 
 updateQuickAction(page);
 

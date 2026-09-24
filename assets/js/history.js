@@ -241,7 +241,7 @@ if (collapsed) {
 
                     <h3>${movement.descripcion || movement.categoria}</h3>
 
-                    <p>${movement.tipo === "prestamo" ? `Prestado a ${movement.persona} · vence ${movement.fechaLimite}` : movement.categoria} · <span class="method-badge ${movement.medio || "unclassified"}">${movement.medio === "efectivo" ? "Efectivo" : movement.medio === "digital" ? "Digital" : "Sin clasificar"}</span> <time class="movement-date" datetime="${movement.fecha}">${formatMovementDate(movement.fecha)}</time></p>
+                    <p>${movement.tipo === "prestamo" ? `Prestado a ${movement.persona} · ${(movement.cuotas||1)} cuota${(movement.cuotas||1)===1?"":"s"} de ${formatMoney(Math.ceil(movement.monto/(movement.cuotas||1)))} · vence ${movement.fechaLimite}` : movement.categoria} · <span class="method-badge ${movement.medio || "unclassified"}">${movement.medio === "efectivo" ? "Efectivo" : movement.medio === "digital" ? "Digital" : "Sin clasificar"}</span> <time class="movement-date" datetime="${movement.fecha}">${formatMovementDate(movement.fecha)}</time></p>
 
                 </div>
 
@@ -285,9 +285,9 @@ if (collapsed) {
 
             button.onclick = () => {
 
-                deleteMovement(
+                deleteHistoryRecord(
 
-                    Number(button.dataset.id)
+                    button.dataset.id
 
                 );
 
@@ -303,9 +303,9 @@ if (collapsed) {
 
             button.onclick = () => {
 
-                editMovement(
+                editHistoryRecord(
 
-                    Number(button.dataset.id)
+                    button.dataset.id
 
                 );
 
@@ -314,7 +314,7 @@ if (collapsed) {
         });
 
     document.querySelectorAll(".loan-paid-btn").forEach(button => {
-        button.onclick = () => confirmLoanRepayment(Number(button.dataset.id));
+        button.onclick = () => confirmLoanRepayment(button.dataset.id);
     });
 
         /*======================================================

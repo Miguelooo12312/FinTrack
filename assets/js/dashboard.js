@@ -238,20 +238,14 @@ function getMoneyLocations(){
 function getOutstandingLoans(){ return finTrack.movimientos.filter(item => item.tipo === "prestamo" && !item.pagado); }
 
 function confirmLoanRepayment(id){
-    const loan = finTrack.movimientos.find(item => item.id === id && item.tipo === "prestamo" && !item.pagado);
-    if(!loan) return;
-    if(!confirm(`¿${loan.persona || "Esta persona"} ya te pagó ${formatMoney(loan.monto)}?`)) return;
-    const method = confirm("¿Recibiste el pago en una plataforma digital?\nAceptar: digital · Cancelar: efectivo") ? "digital" : "efectivo";
-    loan.pagado = true;
-    finTrack.movimientos.push({id:Date.now(), tipo:"recuperacion", monto:loan.monto, categoria:"Pago de préstamo", descripcion:`Pago recibido de ${loan.persona || "préstamo"}`, medio:method, fecha:new Date().toISOString().slice(0,10), prestamoId:loan.id});
-    recalculateFinances(); saveData(finTrack); updateDashboard(); renderHistory(); renderAnalytics?.();
+    openLoanPayment("lend", id);
 }
 
 function updateMoneyLocations(){
     const totals = getMoneyLocations();
     document.getElementById("cash-balance").textContent = formatMoney(totals.efectivo);
     document.getElementById("digital-balance").textContent = formatMoney(totals.digital);
-    const lent = getOutstandingLoans().reduce((sum, loan) => sum + loan.monto, 0);
+    const lent = getOutstandingLoans().reduce((sum, loan) => sum + Math.max(0,loan.monto-(Number(loan.montoPagado)||0)), 0);
     document.getElementById("lent-balance").textContent = formatMoney(lent);
     const message = document.getElementById("funds-message");
     message.textContent = totals.sinClasificar
@@ -261,20 +255,26 @@ function updateMoneyLocations(){
 
 function openWithdrawMoney(){
     const available = getMoneyLocations().digital;
-    const raw = prompt(`¿Cuánto deseas retirar a efectivo? Disponible en plataformas: ${formatMoney(available)}`, "");
-    if(raw === null) return;
-    const monto = Number(raw.replace(/[^0-9]/g, ""));
+    document.getElementById("withdraw-available-amount").textContent = formatMoney(available);
+    document.getElementById("withdraw-amount").value = "";
+    document.getElementById("withdraw-modal").classList.add("active");
+}
+
+function confirmWithdrawMoney(){
+    const available = getMoneyLocations().digital;
+    const monto = Number(document.getElementById("withdraw-amount").value.replace(/\D/g, ""));
     if(!monto || monto <= 0 || monto > available) return alert("Escribe un valor válido que no supere tu dinero digital disponible.");
     finTrack.transferencias.push({id:crypto.randomUUID(), monto, fecha:new Date().toISOString().slice(0,10)});
-    saveData(finTrack); updateMoneyLocations();
+    saveData(finTrack); updateMoneyLocations(); document.getElementById("withdraw-modal").classList.remove("active");
 }
 
 function initMoneyActions(){
     document.getElementById("withdraw-money")?.addEventListener("click", openWithdrawMoney);
-    document.getElementById("lend-money")?.addEventListener("click", () => {
-        openModal();
-        document.querySelector('[data-type="prestamo"]')?.click();
-    });
+    document.getElementById("confirm-withdraw")?.addEventListener("click", confirmWithdrawMoney);
+    document.getElementById("close-withdraw-modal")?.addEventListener("click", () => document.getElementById("withdraw-modal").classList.remove("active"));
+    document.getElementById("cancel-withdraw")?.addEventListener("click", () => document.getElementById("withdraw-modal").classList.remove("active"));
+    document.getElementById("withdraw-amount")?.addEventListener("input", event => { const raw=event.target.value.replace(/\D/g,""); event.target.value=raw ? "$"+Number(raw).toLocaleString("es-CO") : ""; });
+    document.getElementById("lend-money")?.addEventListener("click", () => { document.getElementById("nav-prestamos")?.click(); document.querySelector('[data-loan-mode="lend"]')?.click(); });
 }
 
 function checkDueLoans(){
